@@ -1,41 +1,99 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<title>あなたのＨＰタイトル</title>
-<meta name="keywords" content="ページのキーワードA,B,C">
-<meta name="description" content="ページの説明">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>シンプル版サイドバーサイト</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* サイドバー */
+    .sidebar {
+      width: 200px;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      display: block;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 0;
+      background: #ddd;
+      cursor: pointer;
+      text-align: left;
+    }
+    .sidebar button.active {
+      background: #bbb;
+      font-weight: bold;
+    }
+
+    /* メイン表示部分 */
+    .main {
+      flex: 1;
+      padding: 20px;
+      background: #fff;
+    }
+
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-<div id="outer">
-<header>
-<div class="header-inner">
-<h1>あなたのＨＰタイトル</h1>
-<p>あなたのＨＰの説明文</p>
-</div>
-</header>
-<div id="content">
-<div class="inner">
-<h2>記事ページ見出し・大</h2>
-<p>文章あれこれ</p>
-<h3>記事ページ見出し・中</h3>
-<p>文章あれこれ</p>
-<h4>記事ページ見出し・小</h4>
-<p>文章あれこれ</p>
-</div>
-<aside>
-<div class="left-title">サイドバータイトル</div>
-<div class="link">
-<ul>
-<li>記事ページへのリンク</li>
-<li>記事ページへのリンク</li>
-</ul>
-</div>
-</aside>
-</div>
-<footer> </footer>
-</div>
+  <aside class="sidebar">
+    <button class="menu-btn active" data-page="home">ホーム</button>
+    <button class="menu-btn" data-page="about">会社情報</button>
+    <button class="menu-btn" data-page="services">サービス</button>
+    <button class="menu-btn" data-page="contact">お問い合わせ</button>
+  </aside>
+
+  <main class="main">
+    <section id="home" class="page active">
+      <h2>ホーム</h2>
+      <p>メニューをクリックするとこの部分が切り替わります。</p>
+    </section>
+
+    <section id="about" class="page">
+      <h2>会社情報</h2>
+      <p>ここに会社概要テキストを入力できます。</p>
+    </section>
+
+    <section id="services" class="page">
+      <h2>サービス</h2>
+      <p>サービス内容をここに記述してください。</p>
+    </section>
+
+    <section id="contact" class="page">
+      <h2>お問い合わせ</h2>
+      <p>メールアドレスやフォームの案内を書く場所です。</p>
+    </section>
+  </main>
+
+  <script>
+    const buttons = document.querySelectorAll('.menu-btn');
+    const pages = document.querySelectorAll('.page');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // ボタンの active 切り替え
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // ページ切り替え
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(btn.dataset.page).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
