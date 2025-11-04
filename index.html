@@ -51,49 +51,15 @@
 </head>
 <body>
   <aside class="sidebar">
-    <button class="menu-btn active" data-page="home">ホーム</button>
-    <button class="menu-btn" data-page="about">タップゲーム</button>
-    <button class="menu-btn" data-page="services">工事中</button>
-    <button class="menu-btn" data-page="contact">工事中２</button>
+    <a href="index.html">ホーム</a>
+    <a href="tapgame.html">タップゲーム</a>
+    <button>工事中</button>
+    <button>工事中２</button>
   </aside>
 
   <main class="main">
-    <section id="home" class="page active">
-      <h2>ホーム</h2>
-      <p>メニューをクリックするとこの部分が切り替わります。</p>
-    </section>
-
-    <section id="about" class="page">
-      <h2>タップゲーム</h2>
-      <p>はじめてのブラウザゲームを作ります。</p>
-    </section>
-
-    <section id="services" class="page">
-      <h2>工事中</h2>
-      <p>予約ページ</p>
-    </section>
-
-    <section id="contact" class="page">
-      <h2>工事中２</h2>
-      <p>予約ページ２</p>
-    </section>
+    <h2>ホーム</h2>
+    <p>サイドバーからページを選択できます。</p>
   </main>
-
-  <script>
-    const buttons = document.querySelectorAll('.menu-btn');
-    const pages = document.querySelectorAll('.page');
-
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // ボタンの active 切り替え
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // ページ切り替え
-        pages.forEach(p => p.classList.remove('active'));
-        document.getElementById(btn.dataset.page).classList.add('active');
-      });
-    });
-  </script>
 </body>
 </html>
