@@ -4,15 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>タップゲーム</title>
-  <link rel="stylesheet" href="tapgame.css">
   <script src="tapgame.js" defer></script>
+  <script src="pixi.min.js"></script>
+  <script src="pixi-sound.js"></script>
+  <script src="p94e.js"></script>
+  <script src="main.js"></script>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body { 
+      position: relative;
+      background-color: #222;
+      text-align: center;
+    } 
+  </style>
 </head>
 <body>
   <h2>タップゲーム</h2>
   <p><a href="index.html">← 戻る</a></p>
-
-  <canvas id="screen" width="400" height="400" style="background:#eee;"></canvas>
-
-  <p>スコア：<span id="score">0</span></p>
 </body>
 </html>
