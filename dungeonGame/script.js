@@ -7,7 +7,7 @@ log.addEventListener("click", () => {
 
 // メッセージを追加する関数
 function addMessage(message) {
-  // クリックでステップ進行
+  const log = document.getElementById("log");
   log.innerHTML = "> " + message + "<br>";
 }
 
