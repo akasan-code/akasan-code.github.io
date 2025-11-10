@@ -45,7 +45,8 @@ async function moveForward() {
 	addMessage(hoge);
 
 	let stairsChance = 5 + stepNum * 9;
-	addMessage(stairsChance);
+	addMessage("階段の出る確率：" + stairsChance);
+	await wait(3);
 
 	// 一度メッセージをクリアしてから内容表示
 	log.innerHTML = "";
