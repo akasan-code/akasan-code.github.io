@@ -2,7 +2,6 @@
 log.addEventListener("click", () => {
     // クリックしたら一度クリア
     log.innerHTML = "";
-  }
 });
 
 // メッセージを追加する関数
