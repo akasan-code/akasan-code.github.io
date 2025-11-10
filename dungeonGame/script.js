@@ -1,4 +1,6 @@
 // 変数
+const logW = document.getElementById("log");
+const gameW = document.getElementById("game");
 let stepNum = 0;	// 進行状態
 let floorNum = 1;	// 階層数
 
@@ -13,42 +15,38 @@ function randomChance(chance) {
 }
 
 // ログエリアクリックで次のメッセージを表示
-log.addEventListener("click", () => {
+logW.addEventListener("click", () => {
     // クリックしたら一度クリア
-    log.innerHTML = "";
+    logW.innerHTML = "";
 });
 
 // メッセージを追加する関数
 function addMessage(message) {
-  const log = document.getElementById("log");
-  log.innerHTML = log.innerHTML + "> " + message + "<br>";
-  log.scrollTop = log.scrollHeight; // 自動スクロール
+  logW.innerHTML = logW.innerHTML + "> " + message + "<br>";
+  logW.scrollTop = logW.scrollHeight; // 自動スクロール
 }
 
 // 進むボタンが押されたときの処理
 async function moveForward() {
-	const log = document.getElementById("log");
 
 	// 一度メッセージをクリアしてから内容表示
-	log.innerHTML = "";
+	logW.innerHTML = "";
 	addMessage("あなたは奥へと進んだ。");
+	gameW.style.backgroundImage = `url('dungeon_back1.png')`;
 	await wait(1);
 	addMessage("・・・");
 	await wait(1);
 	addMessage("・・");
 	await wait(1);
 	addMessage("・");
-	await wait(2);
 
 	// ここでイベント処理を入れる
-	let hoge = await Math.random() * 100;
-	addMessage(hoge);
 	// ここでイベント処理を入れる
 
 	// イベント後の処理
 	await wait(3);
 	// 一度メッセージをクリアしてから内容表示
-	log.innerHTML = "";
+	logW.innerHTML = "";
 	addMessage("・");
 	await wait(1);
 	addMessage("・");
