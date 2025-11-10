@@ -1,3 +1,8 @@
+// wait関数
+async function wait(second) {
+	return new Promise(resolve => setTimeout(resolve, 1000 * second));
+}
+
 // ログエリアクリックで次のメッセージを表示
 log.addEventListener("click", () => {
     // クリックしたら一度クリア
