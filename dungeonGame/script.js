@@ -3,6 +3,11 @@ async function wait(second) {
 	return new Promise(resolve => setTimeout(resolve, 1000 * second));
 }
 
+// ランダム地
+function randomChance(chance) {
+  return Math.random() * 100 < chance;
+}
+
 // ログエリアクリックで次のメッセージを表示
 log.addEventListener("click", () => {
     // クリックしたら一度クリア
@@ -30,6 +35,10 @@ async function moveForward() {
 	await wait(1);
 	addMessage("・");
 	await wait(2);
+
+	let hoge = await Math.random() * 100;
+	addMessage(hoge);
+
 }
 
 // 休むボタンが押されたときの処理
