@@ -32,6 +32,8 @@ async function moveForward() {
 	// 一度メッセージをクリアしてから内容表示
 	logW.innerHTML = "";
 	addMessage("あなたは奥へと進んだ。");
+	gameW.style.background = "black";
+	await wait(1);
 	gameW.style.backgroundImage = `url('dungeon_back1.png')`;
 	await wait(1);
 	addMessage("・・・");
