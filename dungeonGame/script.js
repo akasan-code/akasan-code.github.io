@@ -17,7 +17,7 @@ log.addEventListener("click", () => {
 // メッセージを追加する関数
 function addMessage(message) {
   const log = document.getElementById("log");
-  log.innerHTML = "> " + message + "<br>";
+  log.innerHTML = log.innerHTML + "> " + message + "<br>";
   log.scrollTop = log.scrollHeight; // 自動スクロール
 }
 
