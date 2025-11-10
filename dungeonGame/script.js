@@ -1,3 +1,16 @@
+// ログエリアクリックで次のメッセージを表示
+log.addEventListener("click", () => {
+    // クリックしたら一度クリア
+    log.innerHTML = "";
+  }
+});
+
+// メッセージを追加する関数
+function addMessage(message) {
+  // クリックでステップ進行
+  log.innerHTML = "> " + message + "<br>";
+}
+
 // ログ出力用の関数
 function addLog(message) {
   const log = document.getElementById("log");
@@ -7,16 +20,16 @@ function addLog(message) {
 
 // 進むボタンが押されたときの処理
 function moveForward() {
-  addLog("あなたは奥へと進んだ。");
-  addLog("・・・");
-  addLog("・・");
-  addLog("・");
+  addMessage("あなたは奥へと進んだ。");
+  addMessage("・・・");
+  addMessage("・・");
+  addMessage("・");
 }
 
 // 休むボタンが押されたときの処理
 function rest() {
-  addLog("あなたは少し休むことにした。");
-  addLog("・・・");
-  addLog("・・");
-  addLog("・");
+  addMessage("あなたは少し休むことにした。");
+  addMessage("・・・");
+  addMessage("・・");
+  addMessage("・");
 }
