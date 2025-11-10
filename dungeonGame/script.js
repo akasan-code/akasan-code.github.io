@@ -23,11 +23,14 @@ function addLog(message) {
 }
 
 // 進むボタンが押されたときの処理
-function moveForward() {
-  addMessage("あなたは奥へと進んだ。");
-  addMessage("・・・");
-  addMessage("・・");
-  addMessage("・");
+async function moveForward() {
+	addMessage("あなたは奥へと進んだ。");
+	await wait(1);
+	addMessage("・・・");
+	await wait(1);
+	addMessage("・・");
+	await wait(1);
+	addMessage("・");
 }
 
 // 休むボタンが押されたときの処理
