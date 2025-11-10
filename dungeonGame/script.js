@@ -43,8 +43,12 @@ async function moveForward() {
 
 // 休むボタンが押されたときの処理
 function rest() {
-  addMessage("あなたは少し休むことにした。");
-  addMessage("・・・");
-  addMessage("・・");
-  addMessage("・");
+	addMessage("あなたは少し休むことにした。");
+	await wait(1);
+	addMessage("・・・");
+	await wait(1);
+	addMessage("・・");
+	await wait(1);
+	addMessage("・");
+	await wait(2);
 }
