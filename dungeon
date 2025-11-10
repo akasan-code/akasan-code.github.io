@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ウィザードリィ風ダンジョン</title>
+<style>
+body {
+  background-color: black;
+  color: #0f0;
+  font-family: monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+#game {
+  border: 2px solid #0f0;
+  width: 480px;
+  height: 360px;
+  position: relative;
+  background-color: black;
+  overflow: hidden;
+}
+
+/* 疑似3Dダンジョン表示 */
+.wall {
+  position: absolute;
+  border: 2px solid #0f0;
+  box-sizing: border-box;
+}
+
+#log {
+  width: 480px;
+  height: 100px;
+  background: #010;
+  border: 1px solid #0f0;
+  padding: 4px;
+  overflow-y: auto;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+#commands {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: rgba(0, 20, 0, 0.8);
+  border: 1px solid #0f0;
+  padding: 4px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.command {
+  cursor: pointer;
+  padding: 2px 6px;
+  display: inline-block;
+}
+.command:hover {
+  background: #0f0;
+  color: black;
+}
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="dungeon"></div>
+  <div id="commands">
+    <div class="command" onclick="moveForward()">MOVE</div>
+    <div class="command" onclick="turnLeft()">TURN←</div>
+    <div class="command" onclick="turnRight()">TURN→</div>
+  </div>
+</div>
+<div id="log"></div>
+
+</body>
+</html>
