@@ -17,6 +17,25 @@ body {
   margin: 0;
 }
 
+/* ゲーム＋ステータスを横並びにする枠 */
+#main {
+  display: flex;
+  gap: 8px; /* ゲーム画面とステータスの間のすき間 */
+  align-items: flex-start;
+}
+  
+/* 左側のステータスウィンドウ */
+#status {
+  width: 180px;
+  height: 360px;
+  border: 2px solid #fff;
+  background: #010;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.6;
+}
+  
 #game {
   border: 2px solid #fff;
   width: 480px;
@@ -61,7 +80,7 @@ body {
   display: inline-block;
 }
 .command:hover {
-  background: #b0b;
+  background: #ee82ee;
   color: black;
 }
 /* ステータスウィンドウ */
