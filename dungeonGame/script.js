@@ -34,6 +34,8 @@ async function moveForward() {
 	addMessage("あなたは奥へと進んだ。");
 	gameW.style.background = "black";
 	await wait(1);
+	gameW.style.background-size:"cover";  // 背景画像をウィンドウに合わせて拡大縮小
+	gameW.style.background-position:"center";
 	gameW.style.backgroundImage = `url('dungeon_back1.png')`;
 	await wait(1);
 	addMessage("・・・");
