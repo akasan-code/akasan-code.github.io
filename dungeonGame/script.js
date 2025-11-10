@@ -39,6 +39,11 @@ async function moveForward() {
 	let hoge = await Math.random() * 100;
 	addMessage(hoge);
 
+	// 一度メッセージをクリアしてから内容表示
+	addMessage("・");
+	addMessage("・");
+	addMessage("・");
+	addMessage("先に進もう。");
 }
 
 // 休むボタンが押されたときの処理
