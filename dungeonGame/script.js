@@ -12,3 +12,11 @@ function moveForward() {
   addLog("・・");
   addLog("・");
 }
+
+// 休むボタンが押されたときの処理
+function rest() {
+  addLog("あなたは少し休むことにした。");
+  addLog("・・・");
+  addLog("・・");
+  addLog("・");
+}
