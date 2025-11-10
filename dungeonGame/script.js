@@ -1,3 +1,7 @@
+// 変数
+let stepNum = 0;	// 進行状態
+let floorNum = 1;	// 階層数
+
 // wait関数
 async function wait(second) {
 	return new Promise(resolve => setTimeout(resolve, 1000 * second));
@@ -36,14 +40,24 @@ async function moveForward() {
 	addMessage("・");
 	await wait(2);
 
+	// ここでイベント処理を入れる
 	let hoge = await Math.random() * 100;
 	addMessage(hoge);
 
+	let stairsChance = 5 + stepNum * 9;
+	addMessage(stairsChance);
+
 	// 一度メッセージをクリアしてから内容表示
+	log.innerHTML = "";
 	addMessage("・");
+	await wait(1);
 	addMessage("・");
+	await wait(1);
 	addMessage("・");
+	await wait(1);
 	addMessage("先に進もう。");
+
+	stepNum = stepNum + 1
 }
 
 // 休むボタンが押されたときの処理
