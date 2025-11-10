@@ -64,6 +64,7 @@ async function moveForward() {
 		await wait(1);
 		stepNum = 0;
 		floorNum = floorNum + 1;
+		document.getElementById("floorNum").textContent = floorNum;
 
 	} else {
 		addMessage("静かな通路だ…");
