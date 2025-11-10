@@ -41,7 +41,9 @@ body {
   width: 400px;
   height: 300px;
   position: relative;
-  background-color: black;
+  background-size: cover;  /* 背景画像をウィンドウに合わせて拡大縮小 */
+  background-position: center;
+  transition: background-image 0.5s ease; /* ふわっと切り替わる */
   overflow: hidden;
 }
 
