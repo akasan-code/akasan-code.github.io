@@ -7,5 +7,8 @@ function addLog(message) {
 
 // 進むボタンが押されたときの処理
 function moveForward() {
-  addLog("あなたは前に進んだ。");
+  addLog("あなたは奥へと進んだ。");
+  addLog("・・・");
+  addLog("・・");
+  addLog("・");
 }
