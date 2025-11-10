@@ -7,7 +7,7 @@ async function wait(second) {
 	return new Promise(resolve => setTimeout(resolve, 1000 * second));
 }
 
-// ランダム地
+// ランダム判定chance以下なら成功で返す
 function randomChance(chance) {
   return Math.random() * 100 < chance;
 }
@@ -43,22 +43,34 @@ async function moveForward() {
 	// ここでイベント処理を入れる
 	let hoge = await Math.random() * 100;
 	addMessage(hoge);
+	// ここでイベント処理を入れる
 
-	let stairsChance = 5 + stepNum * 9;
-	addMessage("階段の出る確率：" + stairsChance);
+	// イベント後の処理
 	await wait(3);
-
 	// 一度メッセージをクリアしてから内容表示
 	log.innerHTML = "";
 	addMessage("・");
 	await wait(1);
 	addMessage("・");
 	await wait(1);
-	addMessage("・");
-	await wait(1);
-	addMessage("先に進もう。");
 
-	stepNum = stepNum + 1
+	// 階段の出る確率：12回進むと100％超え
+	let stairsChance = 5 + stepNum * 9;
+	addMessage("階段の出る確率：" + stairsChance);
+	if (randomChance(stairsChance)) {
+		addMessage("下への階段を見つけた！");
+		await wait(1);
+		addMessage("あなたは階段を下り、新たな階層に進んだ。");
+		await wait(1);
+		stepNum = 0;
+		floorNum = floorNum + 1;
+
+	} else {
+		addMessage("静かな通路だ…");
+		await wait(1);
+		addMessage("先に進もう。");
+		stepNum = stepNum + 1;
+	}
 }
 
 // 休むボタンが押されたときの処理
