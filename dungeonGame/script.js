@@ -36,7 +36,11 @@ async function moveForward() {
 	await wait(1);
 	gameW.style.backgroundSize = "cover";  // 背景画像をウィンドウに合わせて拡大縮小
 	gameW.style.backgroundPosition = "center";
-	gameW.style.backgroundImage = `url('dungeon_back1.png')`;
+	if (randomChance(50)) {
+		gameW.style.backgroundImage = `url('dungeon_back1.png')`;
+	} else {
+		gameW.style.backgroundImage = `url('dungeon_back2.png')`;
+	}
 	await wait(1);
 	addMessage("・・・");
 	await wait(1);
