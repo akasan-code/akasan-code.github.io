@@ -14,6 +14,16 @@ function randomChance(chance) {
   return Math.random() * 100 < chance;
 }
 
+// 背景を一旦、暗転させてから入れ替える
+function changeBackground(picPath) {
+	gameW.style.background = "black";
+	await wait(1);
+	gameW.style.backgroundSize = "cover";  		// 背景画像をウィンドウに合わせて拡大縮小
+	gameW.style.backgroundPosition = "center";
+	gameW.style.backgroundImage = `url(picPath)`;
+	return
+}
+
 // ログエリアクリックで次のメッセージを表示
 logW.addEventListener("click", () => {
     // クリックしたら一度クリア
@@ -29,17 +39,13 @@ function addMessage(message) {
 // 進むボタンが押されたときの処理
 async function moveForward() {
 
-	// 一度メッセージをクリアしてから内容表示
 	logW.innerHTML = "";
 	addMessage("あなたは奥へと進んだ。");
-	gameW.style.background = "black";
-	await wait(1);
-	gameW.style.backgroundSize = "cover";  // 背景画像をウィンドウに合わせて拡大縮小
-	gameW.style.backgroundPosition = "center";
+	// 背景画像を入れ替えて進んだ風にする
 	if (randomChance(50)) {
-		gameW.style.backgroundImage = `url('dungeon_back1.png')`;
+		changeBackground('dungeon_back1.png')
 	} else {
-		gameW.style.backgroundImage = `url('dungeon_back2.png')`;
+		changeBackground('dungeon_back2.png')
 	}
 	await wait(1);
 	addMessage("・・・");
@@ -64,10 +70,12 @@ async function moveForward() {
 	let stairsChance = 5 + stepNum * 9;
 	addMessage("階段の出る確率：" + stairsChance);
 	if (randomChance(stairsChance)) {
+		changeBackground('dungeon_stairs.jpg')
 		addMessage("下への階段を見つけた！");
 		await wait(1);
 		addMessage("あなたは階段を下り、新たな階層に進んだ。");
 		await wait(1);
+		changeBackground('dungeon_entrance.png')
 		stepNum = 0;
 		floorNum = floorNum + 1;
 		document.getElementById("floorNum").textContent = floorNum;
