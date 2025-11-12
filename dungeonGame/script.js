@@ -1,8 +1,9 @@
 // 変数
 const logW = document.getElementById("log");
 const gameW = document.getElementById("game");
-let stepNum = 0;	// 進行状態
-let floorNum = 1;	// 階層数
+let stepNum = 0;		// 進行状態
+let floorNum = 1;		// 階層数
+let inBattle = false;	// 戦闘中かどうかのフラグ
 
 // wait関数
 async function wait(second) {
@@ -38,6 +39,7 @@ function addMessage(message) {
 
 // 進むボタンが押されたときの処理
 async function moveForward() {
+	if (inBattle) return; // バトル中は無効にする
 
 	logW.innerHTML = "";
 	addMessage("あなたは奥へと進んだ。");
@@ -111,3 +113,57 @@ async function rest() {
 	addMessage("・");
 	await wait(2);
 }
+
+// ======== タップ式バトル関数 ========
+async function startBattle(enemyName) {
+  inBattle = true;
+  logW.innerHTML = "";
+  addMessage(`${enemyName}が現れた！`);
+  await wait(1);
+  addMessage("攻撃タイミングを狙え！");
+
+  // タイミングゾーン生成
+  const timingDiv = document.createElement("div");
+  timingDiv.style.position = "absolute";
+  timingDiv.style.left = "50%";
+  timingDiv.style.top = "50%";
+  timingDiv.style.transform = "translate(-50%, -50%)";
+  timingDiv.style.width = "120px";
+  timingDiv.style.height = "120px";
+  timingDiv.style.border = "3px solid red";
+  timingDiv.style.borderRadius = "50%";
+  timingDiv.style.transition = "all 1.5s linear";
+  gameW.appendChild(timingDiv);
+
+  // 小さい円（ターゲット）
+  const inner = document.createElement("div");
+  inner.style.width = "100%";
+  inner.style.height = "100%";
+  inner.style.background = "rgba(255,0,0,0.2)";
+  inner.style.borderRadius = "50%";
+  timingDiv.appendChild(inner);
+
+  // 円を縮小
+  setTimeout(() => {
+    inner.style.transition = "all 1.5s linear";
+    inner.style.transform = "scale(0)";
+  }, 50);
+
+  // 判定
+  let judged = false;
+  timingDiv.addEventListener("click", () => {
+    if (judged) return;
+    judged = true;
+    const currentScale = parseFloat(inner.style.transform.replace("scale(", "").replace(")", "")) || 1;
+    gameW.removeChild(timingDiv);
+
+    if (currentScale < 0.3 && currentScale > 0.1) {
+      addMessage("会心の一撃！");
+      playSE("hit.mp3");
+    } else {
+      addMessage("攻撃を外した！");
+      playSE("miss.mp3");
+    }
+
+    inBattle = false;
+  });
