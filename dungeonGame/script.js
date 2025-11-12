@@ -144,35 +144,36 @@ async function startBattle(enemyName) {
   inner.style.borderRadius = "50%";
   timingDiv.appendChild(inner);
 
-  // 円を縮小
-  setTimeout(() => {
-    inner.style.transition = "all 1.5s linear";
-    inner.style.transform = "scale(0)";
-  }, 50);
-
-  // 判定
-  let judged = false;
-  timingDiv.addEventListener("click", () => {
-    if (judged) return;
-    judged = true;
-    const currentScale = parseFloat(inner.style.transform.replace("scale(", "").replace(")", "")) || 1;
-    gameW.removeChild(timingDiv);
-
-    if (currentScale < 0.3 && currentScale > 0.1) {
-      addMessage("会心の一撃！");
-    } else {
-      addMessage("攻撃を外した！");
+  // 無限ループで縮小・拡大を繰り返す
+  let loop = true;
+  async function pulse() {
+    while (loop) {
+      inner.style.transition = "all 1.5s linear";
+      inner.style.transform = "scale(0)";
+      await wait(1.5);
+      inner.style.transition = "all 0s"; // 戻す瞬間は即座に
+      inner.style.transform = "scale(1)";
+      await wait(0.1);
     }
+  }
+  pulse(); // 開始
 
-    inBattle = false;
-  });
+  // クリック判定
+  timingDiv.addEventListener("click", () => {
+    const transformValue = inner.style.transform;
+    const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
-	// 2秒後に自動判定（タイミング逃し）
-	await wait(2);
-	if (!judged) {
-    	gameW.removeChild(timingDiv);
-    	addMessage("チャンスを逃した！");
-    	playSE("miss.mp3");
-    	inBattle = false;
+		if (currentScale < 0.3 && currentScale > 0.1) {
+			addMessage("会心の一撃！");
+	//		playSE("hit.mp3");
+			loop = false;
+			gameW.removeChild(timingDiv);
+			inBattle = false;
+	    } else {
+			addMessage("攻撃を外した！");
+	//		playSE("miss.mp3");
+			gameW.removeChild(timingDiv);
+			inBattle = false;
+	    }
 	}
 }
