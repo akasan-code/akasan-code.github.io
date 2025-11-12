@@ -166,3 +166,13 @@ async function startBattle(enemyName) {
 
     inBattle = false;
   });
+
+	// 2秒後に自動判定（タイミング逃し）
+	await wait(2);
+	if (!judged) {
+    	gameW.removeChild(timingDiv);
+    	addMessage("チャンスを逃した！");
+    	playSE("miss.mp3");
+    	inBattle = false;
+	}
+}
