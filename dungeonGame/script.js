@@ -58,13 +58,13 @@ async function moveForward() {
 
 	// ここでイベント処理を入れる
 	const actionRoll = Math.random() * 100
-	if (actionRoll < 10){
+	if (actionRoll < 10) {
 		// 宝箱
-	} else  (actionRoll < 30){
+	} else if (actionRoll < 30) {
 		// 何もなし
-	} else  (actionRoll < 60){
+	} else if (actionRoll < 60) {
 		// イベント
-	} else  (actionRoll < 90){
+	} else if (actionRoll < 90) {
 		// 敵を出す
 		startBattle(敵);
 	} else {
