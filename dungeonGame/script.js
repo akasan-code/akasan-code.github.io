@@ -160,10 +160,8 @@ async function startBattle(enemyName) {
 
     if (currentScale < 0.3 && currentScale > 0.1) {
       addMessage("会心の一撃！");
-      playSE("hit.mp3");
     } else {
       addMessage("攻撃を外した！");
-      playSE("miss.mp3");
     }
 
     inBattle = false;
