@@ -175,5 +175,5 @@ async function startBattle(enemyName) {
 			gameW.removeChild(timingDiv);
 			inBattle = false;
 	    }
-	}
+	});
 }
