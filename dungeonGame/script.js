@@ -55,7 +55,19 @@ async function moveForward() {
 	addMessage("・");
 
 	// ここでイベント処理を入れる
-	// ここでイベント処理を入れる
+	const actionRoll = Math.random() * 100
+	if (actionRoll < 10){
+		// 宝箱
+	} else  (actionRoll < 30){
+		// 何もなし
+	} else  (actionRoll < 60){
+		// イベント
+	} else  (actionRoll < 90){
+		// 敵を出す
+	} else {
+		// 敵を出す強敵
+	}
+	// イベント処理終わり
 
 	// イベント後の処理
 	await wait(3);
@@ -81,9 +93,9 @@ async function moveForward() {
 		document.getElementById("floorNum").textContent = floorNum;
 
 	} else {
-		addMessage("静かな通路だ…");
+		addMessage("まだ奥へ続いている…");
 		await wait(1);
-		addMessage("先に進もう。");
+		addMessage("先に進もうか。");
 		stepNum = stepNum + 1;
 	}
 }
