@@ -16,7 +16,7 @@ function randomChance(chance) {
 }
 
 // 背景を一旦、暗転させてから入れ替える
-function changeBackground(picPath) {
+async function changeBackground(picPath) {
 	gameW.style.background = "black";
 	await wait(1);
 	gameW.style.backgroundSize = "cover";  		// 背景画像をウィンドウに合わせて拡大縮小
