@@ -66,6 +66,7 @@ async function moveForward() {
 		// イベント
 	} else  (actionRoll < 90){
 		// 敵を出す
+		startBattle(敵);
 	} else {
 		// 敵を出す強敵
 	}
