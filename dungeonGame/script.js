@@ -120,9 +120,8 @@ async function startBattle(enemyName) {
 	inBattle = true;
 	// パラメータ設定
 	const D0 = 150;      // 円の初期直径(px)
-	let s_min = 0.5;    // 成功範囲下限（小さいほど縮小）
 	let s_max = 0.7;    // 成功範囲上限（1がMAXなので、0.99あたりが）
-	let T = 1500;        // 1サイクル時間（ms）
+	let timingSpeed = 1.5;        // 1サイクル時間（s）
 
 	//各ウィンドウを一旦クリア
 	logW.innerHTML = "";
@@ -173,9 +172,9 @@ async function startBattle(enemyName) {
   let loop = true;
   async function pulse() {
     while (loop) {
-      inner.style.transition = "all 1.5s linear";
+      inner.style.transition = "all " + timingSpeed + "s linear";
       inner.style.transform = "scale(0)";
-      await wait(1.5);
+      await wait(timingSpeed);
       inner.style.transition = "all 0s"; // 戻す瞬間は即座に
       inner.style.transform = "scale(1)";
       await wait(0.1);
@@ -189,7 +188,7 @@ async function startBattle(enemyName) {
 	const matrix = getComputedStyle(inner).transform;
 	const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
-		if (currentScale < s_max && currentScale > s_min) {
+		if (currentScale < s_max ) {
 			addMessage("会心の一撃！" + currentScale + "matrix：" + matrix );
 	//		playSE("hit.mp3");
 			loop = false;
