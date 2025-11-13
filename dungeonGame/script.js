@@ -124,23 +124,27 @@ async function startBattle(enemyName) {
 	let s_max = 3.0;    // 成功範囲上限
 	let T = 1500;        // 1サイクル時間（ms）
 
+	各ウィンドウを一旦クリア
 	logW.innerHTML = "";
-  addMessage(`${enemyName}が現れた！`);
-  await wait(1);
-  addMessage("攻撃タイミングを狙え！");
+	gameW.style.background = "black";
 
-  // タイミングゾーン生成
-  const timingDiv = document.createElement("div");
-  timingDiv.style.position = "absolute";
-  timingDiv.style.left = "50%";
-  timingDiv.style.top = "50%";
-  timingDiv.style.transform = "translate(-50%, -50%)";
-  timingDiv.style.width = D0 + "px";
-  timingDiv.style.height = D0 + "px";
-  timingDiv.style.border = "3px solid red";
-  timingDiv.style.borderRadius = "50%";
-  timingDiv.style.transition = "all 1.5s linear";
-  gameW.appendChild(timingDiv);
+	addMessage(`${enemyName}が現れた！`);
+	await wait(1);
+	addMessage("攻撃タイミングを狙え！");
+	addMessage("（クリックして止める）");
+
+	// タイミングゾーン生成
+	const timingDiv = document.createElement("div");
+	timingDiv.style.position = "absolute";
+	timingDiv.style.left = "50%";
+	timingDiv.style.top = "50%";
+	timingDiv.style.transform = "translate(-50%, -50%)";
+	timingDiv.style.width = D0 + "px";
+	timingDiv.style.height = D0 + "px";
+	timingDiv.style.border = "3px solid red";
+	timingDiv.style.borderRadius = "50%";
+	timingDiv.style.transition = "all 1.5s linear";
+	gameW.appendChild(timingDiv);
 
   // ======== 成功範囲の可視化（薄い緑の円） ========
   const successZone = document.createElement("div");
@@ -193,7 +197,7 @@ async function startBattle(enemyName) {
 //		    gameW.removeChild(successZone);
 			inBattle = false;
 	    } else {
-			addMessage("攻撃を外した！");
+			addMessage("攻撃を外した！" + currentScale );
 	//		playSE("miss.mp3");
 		    // クリーンアップ
 		    gameW.removeChild(timingDiv);
