@@ -60,9 +60,9 @@ async function moveForward() {
 	const actionRoll = Math.random() * 100
 	if (actionRoll < 10) {
 		// 宝箱
-	} else if (actionRoll < 30) {
+//	} else if (actionRoll < 30) {
 		// 何もなし
-	} else if (actionRoll < 60) {
+//	} else if (actionRoll < 60) {
 		// イベント
 	} else if (actionRoll < 90) {
 		// 敵を出す
@@ -83,7 +83,7 @@ async function moveForward() {
 
 	// 階段の出る確率：12回進むと100％超え
 	let stairsChance = 5 + stepNum * 9;
-	addMessage("階段の出る確率：" + stairsChance);
+//	addMessage("階段の出る確率：" + stairsChance);
 	if (randomChance(stairsChance)) {
 		changeBackground('dungeon_stairs.jpg')
 		addMessage("下への階段を見つけた！");
@@ -136,7 +136,20 @@ async function startBattle(enemyName) {
   timingDiv.style.transition = "all 1.5s linear";
   gameW.appendChild(timingDiv);
 
-  // 小さい円（ターゲット）
+  // ======== 成功範囲の可視化（薄い緑の円） ========
+  const successZone = document.createElement("div");
+  successZone.style.position = "absolute";
+  successZone.style.left = "50%";
+  successZone.style.top = "50%";
+  successZone.style.transform = "translate(-50%, -50%) scale(0.2)";
+  successZone.style.width = "120px";
+  successZone.style.height = "120px";
+  successZone.style.borderRadius = "50%";
+  successZone.style.background = "rgba(0,255,0,0.15)"; // うっすら緑
+  successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
+  timingDiv.appendChild(successZone);
+	
+  // 移動する円の描写
   const inner = document.createElement("div");
   inner.style.width = "100%";
   inner.style.height = "100%";
