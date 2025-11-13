@@ -189,7 +189,7 @@ async function startBattle(enemyName) {
     const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
 		if (currentScale < s_max && currentScale > s_min) {
-			addMessage("会心の一撃！" + currentScale );
+			addMessage("会心の一撃！" + currentScale + "transformValue：" + transformValue );
 	//		playSE("hit.mp3");
 			loop = false;
 		    // クリーンアップ
@@ -198,7 +198,7 @@ async function startBattle(enemyName) {
 			inBattle = false;
 			return;
 	    } else {
-			addMessage("攻撃を外した！" + currentScale );
+			addMessage("攻撃を外した！" + currentScale + "transformValue：" + transformValue );
 	//		playSE("miss.mp3");
 		    // クリーンアップ
 		    gameW.removeChild(timingDiv);
