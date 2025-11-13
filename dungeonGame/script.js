@@ -66,7 +66,7 @@ async function moveForward() {
 		// イベント
 	} else if (actionRoll < 90) {
 		// 敵を出す
-		startBattle("敵");
+		await startBattle("敵");
 	} else {
 		// 敵を出す強敵
 	}
@@ -121,7 +121,7 @@ async function startBattle(enemyName) {
 	// パラメータ設定
 	const D0 = 150;      // 円の初期直径(px)
 	let s_min = 0.3;    // 成功範囲下限（小さいほど縮小）
-	let s_max = 0.99;    // 成功範囲上限（1がMAX?）
+	let s_max = 0.7;    // 成功範囲上限（1がMAXなので、0.99あたりが）
 	let T = 1500;        // 1サイクル時間（ms）
 
 	//各ウィンドウを一旦クリア
@@ -141,7 +141,7 @@ async function startBattle(enemyName) {
 	timingDiv.style.transform = "translate(-50%, -50%)";
 	timingDiv.style.width = D0 + "px";
 	timingDiv.style.height = D0 + "px";
-	timingDiv.style.border = "3px solid red";
+	timingDiv.style.border = "3px solid white";
 	timingDiv.style.borderRadius = "50%";
 	timingDiv.style.transition = "all 1.5s linear";
 	gameW.appendChild(timingDiv);
@@ -157,7 +157,7 @@ async function startBattle(enemyName) {
     successZone.style.width = D_outer + "px";
     successZone.style.height = D_outer + "px";
 	successZone.style.borderRadius = "50%";
-  successZone.style.background = "rgba(0,255,0,0.15)"; // うっすら緑
+  successZone.style.background = "rgba(0,255,0,0.3)"; // うっすら緑
   successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
   timingDiv.appendChild(successZone);
 	
@@ -189,7 +189,7 @@ async function startBattle(enemyName) {
     const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
 		if (currentScale < s_max && currentScale > s_min) {
-			addMessage("会心の一撃！");
+			addMessage("会心の一撃！" + currentScale );
 	//		playSE("hit.mp3");
 			loop = false;
 		    // クリーンアップ
