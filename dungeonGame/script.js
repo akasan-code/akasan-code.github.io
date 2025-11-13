@@ -21,7 +21,7 @@ async function changeBackground(picPath) {
 	await wait(1);
 	gameW.style.backgroundSize = "cover";  		// 背景画像をウィンドウに合わせて拡大縮小
 	gameW.style.backgroundPosition = "center";
-	gameW.style.backgroundImage = url(picPath);
+	gameW.style.backgroundImage = "url(" + picPath + ")";
 	return
 }
 
@@ -117,8 +117,14 @@ async function rest() {
 
 // ======== タップ式バトル関数 ========
 async function startBattle(enemyName) {
-  inBattle = true;
-  logW.innerHTML = "";
+	inBattle = true;
+	// パラメータ設定
+	const D0 = 150;      // 円の初期直径(px)
+	let s_min = 0.15;    // 成功範囲下限（小さいほど縮小）
+	let s_max = 0.35;    // 成功範囲上限
+	let T = 1500;        // 1サイクル時間（ms）
+
+	logW.innerHTML = "";
   addMessage(`${enemyName}が現れた！`);
   await wait(1);
   addMessage("攻撃タイミングを狙え！");
@@ -129,8 +135,8 @@ async function startBattle(enemyName) {
   timingDiv.style.left = "50%";
   timingDiv.style.top = "50%";
   timingDiv.style.transform = "translate(-50%, -50%)";
-  timingDiv.style.width = "120px";
-  timingDiv.style.height = "120px";
+  timingDiv.style.width = D0 + "px";
+  timingDiv.style.height = D0 + "px";
   timingDiv.style.border = "3px solid red";
   timingDiv.style.borderRadius = "50%";
   timingDiv.style.transition = "all 1.5s linear";
@@ -142,9 +148,11 @@ async function startBattle(enemyName) {
   successZone.style.left = "50%";
   successZone.style.top = "50%";
   successZone.style.transform = "translate(-50%, -50%) scale(0.2)";
-  successZone.style.width = "120px";
-  successZone.style.height = "120px";
-  successZone.style.borderRadius = "50%";
+    const D_outer = D0 * s_max;
+    const D_inner = D0 * s_min;
+    successZone.style.width = D_outer + "px";
+    successZone.style.height = D_outer + "px";
+	successZone.style.borderRadius = "50%";
   successZone.style.background = "rgba(0,255,0,0.15)"; // うっすら緑
   successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
   timingDiv.appendChild(successZone);
@@ -176,16 +184,20 @@ async function startBattle(enemyName) {
     const transformValue = inner.style.transform;
     const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
-		if (currentScale < 0.3 && currentScale > 0.1) {
+		if (currentScale < s_max && currentScale > s_min) {
 			addMessage("会心の一撃！");
 	//		playSE("hit.mp3");
 			loop = false;
-			gameW.removeChild(timingDiv);
+		    // クリーンアップ
+		    gameW.removeChild(timingDiv);
+		    gameW.removeChild(successZone);
 			inBattle = false;
 	    } else {
 			addMessage("攻撃を外した！");
 	//		playSE("miss.mp3");
-			gameW.removeChild(timingDiv);
+		    // クリーンアップ
+		    gameW.removeChild(timingDiv);
+		    gameW.removeChild(successZone);
 			inBattle = false;
 	    }
 	});
