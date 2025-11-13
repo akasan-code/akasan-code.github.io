@@ -21,7 +21,7 @@ async function changeBackground(picPath) {
 	await wait(1);
 	gameW.style.backgroundSize = "cover";  		// 背景画像をウィンドウに合わせて拡大縮小
 	gameW.style.backgroundPosition = "center";
-	gameW.style.backgroundImage = `url(picPath)`;
+	gameW.style.backgroundImage = url(picPath);
 	return
 }
 
