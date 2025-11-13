@@ -73,7 +73,7 @@ async function moveForward() {
 	// イベント処理終わり
 
 	// イベント後の処理
-	await wait(3);
+//	await wait(3);
 	// 一度メッセージをクリアしてから内容表示
 	logW.innerHTML = "";
 	addMessage("・");
@@ -120,8 +120,8 @@ async function startBattle(enemyName) {
 	inBattle = true;
 	// パラメータ設定
 	const D0 = 150;      // 円の初期直径(px)
-	let s_min = 0.15;    // 成功範囲下限（小さいほど縮小）
-	let s_max = 0.35;    // 成功範囲上限
+	let s_min = 0.3;    // 成功範囲下限（小さいほど縮小）
+	let s_max = 0.5;    // 成功範囲上限
 	let T = 1500;        // 1サイクル時間（ms）
 
 	logW.innerHTML = "";
@@ -190,14 +190,14 @@ async function startBattle(enemyName) {
 			loop = false;
 		    // クリーンアップ
 		    gameW.removeChild(timingDiv);
-		    gameW.removeChild(successZone);
+//		    gameW.removeChild(successZone);
 			inBattle = false;
 	    } else {
 			addMessage("攻撃を外した！");
 	//		playSE("miss.mp3");
 		    // クリーンアップ
 		    gameW.removeChild(timingDiv);
-		    gameW.removeChild(successZone);
+//		    gameW.removeChild(successZone);
 			inBattle = false;
 	    }
 	});
