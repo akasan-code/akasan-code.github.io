@@ -151,7 +151,7 @@ async function startBattle(enemyName) {
   successZone.style.position = "absolute";
   successZone.style.left = "50%";
   successZone.style.top = "50%";
-  successZone.style.transform = "translate(-50%, -50%) scale(0.2)";
+  successZone.style.transform = "translate(-50%, -50%) ";
     const D_outer = D0 * s_max;
     const D_inner = D0 * s_min;
     successZone.style.width = D_outer + "px";
