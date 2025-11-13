@@ -121,10 +121,10 @@ async function startBattle(enemyName) {
 	// パラメータ設定
 	const D0 = 150;      // 円の初期直径(px)
 	let s_min = 0.3;    // 成功範囲下限（小さいほど縮小）
-	let s_max = 3.0;    // 成功範囲上限
+	let s_max = 10.0;    // 成功範囲上限
 	let T = 1500;        // 1サイクル時間（ms）
 
-	各ウィンドウを一旦クリア
+	//各ウィンドウを一旦クリア
 	logW.innerHTML = "";
 	gameW.style.background = "black";
 
