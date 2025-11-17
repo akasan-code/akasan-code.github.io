@@ -117,94 +117,96 @@ async function rest() {
 
 // ======== タップ式バトル関数 ========
 async function startBattle(enemyName) {
-	inBattle = true;
-	// パラメータ設定
-	const D0 = 150;      // 円の初期直径(px)
-	let s_max = 0.7;    // 成功範囲上限（1がMAXなので、0.99あたりが）
-	let timingSpeed = 1.5;        // 1サイクル時間（s）
-
-	//各ウィンドウを一旦クリア
-	logW.innerHTML = "";
-	gameW.style.background = "black";
-
-	addMessage(`${enemyName}が現れた！`);
-	await wait(1);
-	addMessage("攻撃タイミングを狙え！");
-	addMessage("（クリックして止める）");
-
-	// タイミングゾーン生成
-	const timingDiv = document.createElement("div");
-	timingDiv.style.position = "absolute";
-	timingDiv.style.left = "50%";
-	timingDiv.style.top = "50%";
-	timingDiv.style.transform = "translate(-50%, -50%)";
-	timingDiv.style.width = D0 + "px";
-	timingDiv.style.height = D0 + "px";
-	timingDiv.style.border = "3px solid white";
-	timingDiv.style.borderRadius = "50%";
-	timingDiv.style.transition = "all 1.5s linear";
-	gameW.appendChild(timingDiv);
-
-  // ======== 成功範囲の可視化（薄い緑の円） ========
-  const successZone = document.createElement("div");
-  successZone.style.position = "absolute";
-  successZone.style.left = "50%";
-  successZone.style.top = "50%";
-  successZone.style.transform = "translate(-50%, -50%) ";
-    const D_outer = D0 * s_max;
-    successZone.style.width = D_outer + "px";
-    successZone.style.height = D_outer + "px";
-	successZone.style.borderRadius = "50%";
-  successZone.style.background = "rgba(0,255,0,0.3)"; // うっすら緑
-  successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
-  timingDiv.appendChild(successZone);
+	return new Promise(async (resolve) => {
+		inBattle = true;
+		// パラメータ設定
+		const D0 = 150;      // 円の初期直径(px)
+		let s_max = 0.7;    // 成功範囲上限（1がMAXなので、0.99あたりが）
+		let timingSpeed = 1.5;        // 1サイクル時間（s）
 	
-  // 移動する円の描写
-  const inner = document.createElement("div");
-  inner.style.width = "100%";
-  inner.style.height = "100%";
-  inner.style.background = "rgba(255,0,0,0.2)";
-  inner.style.borderRadius = "50%";
-  timingDiv.appendChild(inner);
+		//各ウィンドウを一旦クリア
+		logW.innerHTML = "";
+		gameW.style.background = "black";
 
-  // 無限ループで縮小・拡大を繰り返す
-  let loop = true;
-  async function pulse() {
-    while (loop) {
-      inner.style.transition = "all " + timingSpeed + "s linear";
-      inner.style.transform = "scale(0)";
-      await wait(timingSpeed);
-      inner.style.transition = "all 0s"; // 戻す瞬間は即座に
-      inner.style.transform = "scale(1)";
-      await wait(0.1);
-    }
-  }
-  pulse(); // 開始
+		addMessage(`${enemyName}が現れた！`);
+		await wait(1);
+		addMessage("攻撃タイミングを狙え！");
+		addMessage("（クリックして止める）");
 
-  // クリック判定
-  timingDiv.addEventListener("click", () => {
-    const transformValue = inner.style.transform;
-	const matrix = getComputedStyle(inner).transform;
-	const scale = parseFloat(matrix.split("(")[1].split(",")[0]);
+		// タイミングゾーン生成
+		const timingDiv = document.createElement("div");
+		timingDiv.style.position = "absolute";
+		timingDiv.style.left = "50%";
+		timingDiv.style.top = "50%";
+		timingDiv.style.transform = "translate(-50%, -50%)";
+		timingDiv.style.width = D0 + "px";
+		timingDiv.style.height = D0 + "px";
+		timingDiv.style.border = "3px solid white";
+		timingDiv.style.borderRadius = "50%";
+		timingDiv.style.transition = "all 1.5s linear";
+		gameW.appendChild(timingDiv);
+
+		// ======== 成功範囲の可視化（薄い緑の円） ========
+		const successZone = document.createElement("div");
+		successZone.style.position = "absolute";
+		successZone.style.left = "50%";
+		successZone.style.top = "50%";
+		successZone.style.transform = "translate(-50%, -50%) ";
+		const D_outer = D0 * s_max;
+		successZone.style.width = D_outer + "px";
+		successZone.style.height = D_outer + "px";
+		successZone.style.borderRadius = "50%";
+		successZone.style.background = "rgba(0,255,0,0.3)"; // うっすら緑
+		successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
+		timingDiv.appendChild(successZone);
+	
+		// 移動する円の描写
+		const inner = document.createElement("div");
+		inner.style.width = "100%";
+		inner.style.height = "100%";
+		inner.style.background = "rgba(255,0,0,0.2)";
+		inner.style.borderRadius = "50%";
+		timingDiv.appendChild(inner);
+
+		// 無限ループで縮小・拡大を繰り返す
+		let loop = true;
+		async function pulse() {
+			while (loop) {
+			inner.style.transition = "all " + timingSpeed + "s linear";
+			inner.style.transform = "scale(0)";
+			await wait(timingSpeed);
+			inner.style.transition = "all 0s"; // 戻す瞬間は即座に
+			inner.style.transform = "scale(1)";
+			await wait(0.1);
+			}
+		}
+		pulse(); // 開始
+
+		// クリック判定
+		timingDiv.addEventListener("click", () => {
+			const transformValue = inner.style.transform;
+			const matrix = getComputedStyle(inner).transform;
+			const scale = parseFloat(matrix.split("(")[1].split(",")[0]);
 //	  const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
-		if (scale < s_max ) {
-			addMessage("会心の一撃！" + scale + "matrix：" + matrix );
-	//		playSE("hit.mp3");
-			loop = false;
-		    // クリーンアップ
-		    gameW.removeChild(timingDiv);
-//		    gameW.removeChild(successZone);
-			inBattle = false;
-			return;
-	    } else {
-			addMessage("攻撃を外した！" + scale + "matrix：" + matrix );
-	//		playSE("miss.mp3");
-		    // クリーンアップ
-		    gameW.removeChild(timingDiv);
-//		    gameW.removeChild(successZone);
-			inBattle = false;
-			return;
-	    }
-	});
+			if (scale < s_max ) {
+				addMessage("会心の一撃！" + scale + "matrix：" + matrix );
+				//		playSE("hit.mp3");
+				loop = false;
+				// クリーンアップ
+				gameW.removeChild(timingDiv);
+				//		    gameW.removeChild(successZone);
+				inBattle = false;
+			} else {
+				addMessage("攻撃を外した！" + scale + "matrix：" + matrix );
+				//		playSE("miss.mp3");
+				// クリーンアップ
+				gameW.removeChild(timingDiv);
+				//		    gameW.removeChild(successZone);
+				inBattle = false;
+			}
+		});
+
+	resolve();  // 戦闘終了
+	}):
 }
