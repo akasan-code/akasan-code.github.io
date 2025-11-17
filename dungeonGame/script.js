@@ -172,8 +172,8 @@ async function startBattle(enemyName) {
 		let loop = true;
 		async function pulse() {
 			while (loop) {
-			inner.style.transition = "all " + timingSpeed + "s linear";
-			inner.style.transform = "scale(0)";
+			inner.style.transition = "all " + timingSpeed + "s linear";	// timingSpeed秒かけて縮む
+			inner.style.transform = "scale(0)";							// 大きさ0にする
 			await wait(timingSpeed);
 			inner.style.transition = "all 0s"; // 戻す瞬間は即座に
 			inner.style.transform = "scale(1)";
