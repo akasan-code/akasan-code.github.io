@@ -152,7 +152,6 @@ async function startBattle(enemyName) {
   successZone.style.top = "50%";
   successZone.style.transform = "translate(-50%, -50%) ";
     const D_outer = D0 * s_max;
-    const D_inner = D0 * s_min;
     successZone.style.width = D_outer + "px";
     successZone.style.height = D_outer + "px";
 	successZone.style.borderRadius = "50%";
