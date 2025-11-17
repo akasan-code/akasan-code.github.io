@@ -185,10 +185,11 @@ async function startBattle(enemyName) {
   timingDiv.addEventListener("click", () => {
     const transformValue = inner.style.transform;
 	const matrix = getComputedStyle(inner).transform;
-	const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
+	const scale = parseFloat(matrix.split("(")[1].split(",")[0]);
+//	  const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
-		if (currentScale < s_max ) {
-			addMessage("会心の一撃！" + currentScale + "matrix：" + matrix );
+		if (scale < s_max ) {
+			addMessage("会心の一撃！" + scale + "matrix：" + matrix );
 	//		playSE("hit.mp3");
 			loop = false;
 		    // クリーンアップ
@@ -197,7 +198,7 @@ async function startBattle(enemyName) {
 			inBattle = false;
 			return;
 	    } else {
-			addMessage("攻撃を外した！" + currentScale + "matrix：" + matrix );
+			addMessage("攻撃を外した！" + scale + "matrix：" + matrix );
 	//		playSE("miss.mp3");
 		    // クリーンアップ
 		    gameW.removeChild(timingDiv);
