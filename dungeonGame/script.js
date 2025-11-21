@@ -208,5 +208,5 @@ async function startBattle(enemyName) {
 		});
 
 	resolve();  // 戦闘終了
-	}):
+	});
 }
