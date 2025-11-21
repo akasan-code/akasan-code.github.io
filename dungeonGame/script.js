@@ -121,7 +121,7 @@ async function startBattle(enemyName) {
 		inBattle = true;
 		// パラメータ設定
 		const D0 = 150;      // 円の初期直径(px)
-		let s_max = 0.7;    // 成功範囲上限（1がMAXなので、0.99あたりが）
+		let s_max = 0.5;    // 成功範囲上限（1がMAXなので、0.99あたりが）
 		let timingSpeed = 1.5;        // 1サイクル時間（s）
 	
 		//各ウィンドウを一旦クリア
@@ -190,7 +190,8 @@ async function startBattle(enemyName) {
 //	  const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
 
 			if (scale < s_max ) {
-				addMessage("会心の一撃！" + scale + "matrix：" + matrix );
+				addMessage("会心の一撃！");
+				addMessage("敵を倒した！！");
 				//		playSE("hit.mp3");
 				loop = false;
 				// クリーンアップ
@@ -198,7 +199,7 @@ async function startBattle(enemyName) {
 				//		    gameW.removeChild(successZone);
 				inBattle = false;
 			} else {
-				addMessage("攻撃を外した！" + scale + "matrix：" + matrix );
+				addMessage("攻撃を外してしまった.．");
 				//		playSE("miss.mp3");
 				// クリーンアップ
 				gameW.removeChild(timingDiv);
