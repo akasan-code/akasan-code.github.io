@@ -194,20 +194,15 @@ async function startBattle(enemyName) {
 				addMessage("敵を倒した！！");
 				//		playSE("hit.mp3");
 				loop = false;
-				// クリーンアップ
-				gameW.removeChild(timingDiv);
-				//		    gameW.removeChild(successZone);
-				inBattle = false;
 			} else {
 				addMessage("攻撃を外してしまった.．");
 				//		playSE("miss.mp3");
-				// クリーンアップ
-				gameW.removeChild(timingDiv);
 				//		    gameW.removeChild(successZone);
-				inBattle = false;
 			}
+			// クリーンアップ
+			gameW.removeChild(timingDiv);
+			inBattle = false;
+			resolve();  // 戦闘終了
 		});
-
-	resolve();  // 戦闘終了
 	});
 }
