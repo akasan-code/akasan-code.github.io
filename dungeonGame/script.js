@@ -45,9 +45,9 @@ async function moveForward() {
 	addMessage("あなたは奥へと進んだ。");
 	// 背景画像を入れ替えて進んだ風にする
 	if (randomChance(50)) {
-		changeBackground('dungeon_back1.png')
+		await changeBackground('dungeon_back1.png')
 	} else {
-		changeBackground('dungeon_back2.png')
+		await changeBackground('dungeon_back2.png')
 	}
 	await wait(1);
 	addMessage("・・・");
@@ -85,7 +85,7 @@ async function moveForward() {
 	let stairsChance = 5 + stepNum * 9;
 //	addMessage("階段の出る確率：" + stairsChance);
 	if (randomChance(stairsChance)) {
-		changeBackground('dungeon_stairs.jpg')
+		await changeBackground('dungeon_stairs.jpg')
 		addMessage("下への階段を見つけた！");
 		await wait(1);
 		addMessage("あなたは階段を下り、新たな階層に進んだ。");
