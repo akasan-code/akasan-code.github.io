@@ -68,14 +68,10 @@ function updateStatus() {
     gameState.player.level;
 
   document.getElementById("weapon").textContent =
-  gameState.player.weapon
-    ? gameState.player.weapon.name
-    : "なし";
+    p.weapon ? p.weapon.name : "なし";
 
   document.getElementById("shield").textContent =
-  gameState.player.shield
-    ? gameState.player.shield.name
-    : "なし";
+    p.shield ? p.shield.name : "なし";
 }
 
 // ====================
@@ -165,17 +161,13 @@ async function rest() {
 // ====================
 // 装備込みの攻撃力を計算
 function getPlayerAtk() {
-  const weaponAtk = gameState.player.weapon
-    ? gameState.player.weapon.atk
-    : 0;
-  return gameState.player.atk + weaponAtk;
+  const p = gameState.player;
+  return p.baseAtk + (p.weapon ? p.weapon.atk : 0);
 }
 // 装備込みの防御力を計算
 function getPlayerDef() {
-  const shieldDef = gameState.player.shield
-    ? gameState.player.shield.def
-    : 0;
-  return gameState.player.def + shieldDef;
+  const p = gameState.player;
+  return p.baseDef + (p.shield ? p.shield.def : 0);
 }
 // ダメージ計算
 function calcDamage(attacker, defender) {
