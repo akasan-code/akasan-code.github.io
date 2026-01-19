@@ -341,18 +341,49 @@ function createEnemy() {
 // ====================
 // 装備ライブラリ
 // ====================
-const weapons = [
-  { name: "粗悪な鉄剣", atk: 1 },
-  { name: "普通な鉄剣", atk: 4 },
-  { name: "上等な鉄剣", atk: 6 },
-];
+const weapons = {
+  ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1 },
+  ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4 },
+  ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6 },
+};
 
-const shields = [
-  { name: "粗悪な木盾", def: 1 },
-  { name: "普通な木盾", def: 2 },
-  { name: "上等な木盾", def: 3 }
+const shields = {
+  woodLowQuality: { type: "shield", name: "粗悪な木盾", def: 1 },
+  woodMidQuality: { type: "shield", name: "普通な木盾", def: 2 },
+  woodHighQuality: { type: "shield", name: "上等な木盾", def: 3 }
+};
+// ドロップテーブルの設定
+const dropTables = [
+  {
+    minFloor: 1,
+    table: [
+      { item: weapons.ironLowQuality, weight: 50 },
+      { item: weapons.ironMidQuality, weight: 10 },
+      { item: shields.woodLowQuality,  weight: 30 },
+      { item: shields.woodMidQuality,  weight: 10 }
+    ]
+  },
+  {
+    minFloor: 3,
+    table: [
+      { item: weapons.ironLowQuality, weight: 30 },
+      { item: weapons.ironMidQuality, weight: 30 },
+      { item: shields.woodLowQuality,  weight: 20 },
+      { item: shields.woodMidQuality,  weight: 20 }
+    ]
+  },
+  {
+    minFloor: 5,
+    table: [
+      { item: weapons.ironLowQuality, weight: 10 },
+      { item: weapons.ironMidQuality, weight: 45 },
+      { item: weapons.ironHighQuality, weight: 5 },
+      { item: shields.woodLowQuality,  weight: 5 },
+      { item: shields.woodMidQuality,  weight: 30 },
+      { item: shields.woodHighQuality,  weight: 5 }
+    ]
+  }
 ];
-
 
 // ★====================
 // ゲーム開始
