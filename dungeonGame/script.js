@@ -66,6 +66,16 @@ function updateStatus() {
 
   document.getElementById("lv").textContent =
     gameState.player.level;
+
+  document.getElementById("weapon").textContent =
+  gameState.player.weapon
+    ? gameState.player.weapon.name
+    : "なし";
+
+  document.getElementById("shield").textContent =
+  gameState.player.shield
+    ? gameState.player.shield.name
+    : "なし";
 }
 
 // ====================
