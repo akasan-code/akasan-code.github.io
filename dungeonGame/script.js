@@ -221,6 +221,26 @@ async function startBattle(enemy) {
 }
 
 // ====================
+// ドロップ処理
+// ====================
+async function tryDropItem() {
+  if (randomChance(10)) {
+    // 50%で武器 or 盾
+    if (randomChance(50)) {
+      const weapon = weapons[Math.floor(Math.random() * weapons.length)];
+      gameState.player.weapon = weapon;
+      addMessage(`${weapon.name}を手に入れた！`);
+      addMessage(`${weapon.name}を装備した。`);
+    } else {
+      const shield = shields[Math.floor(Math.random() * shields.length)];
+      gameState.player.shield = shield;
+      addMessage(`${shield.name}を手に入れた！`);
+      addMessage(`${shield.name}を装備した。`);
+    }
+  }
+}
+
+// ====================
 // 開始イベント
 // ====================
 async function startGame() {
