@@ -1,208 +1,212 @@
-// 変数
+// ====================
+// 基本DOM
+// ====================
 const logW = document.getElementById("log");
 const gameW = document.getElementById("game");
-let stepNum = 0;		// 進行状態
-let floorNum = 1;		// 階層数
-let inBattle = false;	// 戦闘中かどうかのフラグ
 
-// wait関数
-async function wait(second) {
-	return new Promise(resolve => setTimeout(resolve, 1000 * second));
+// ====================
+// ゲーム状態
+// ====================
+const gameState = {
+  floor: 1,
+  step: 0,
+  inBattle: false,
+  player: {
+    name: "あなた",
+    level: 1,
+    hp: 20,
+    maxHp: 20,
+    atk: 5,
+    def: 2
+  }
+};
+
+// ====================
+// Utility
+// ====================
+function wait(sec) {
+  return new Promise(r => setTimeout(r, sec * 1000));
 }
 
-// ランダム判定chance以下なら成功で返す
 function randomChance(chance) {
   return Math.random() * 100 < chance;
 }
 
-// 背景を一旦、暗転させてから入れ替える
-async function changeBackground(picPath) {
-	gameW.style.background = "black";
-	await wait(1);
-	gameW.style.backgroundSize = "cover";  		// 背景画像をウィンドウに合わせて拡大縮小
-	gameW.style.backgroundPosition = "center";
-	gameW.style.backgroundImage = "url(" + picPath + ")";
-	return
-}
-
-// ログエリアクリックで次のメッセージを表示
-logW.addEventListener("click", () => {
-    // クリックしたら一度クリア
-    logW.innerHTML = "";
-});
-
-// メッセージを追加する関数
-function addMessage(message) {
+function addMessage(msg) {
   logW.innerHTML = logW.innerHTML + "> " + message + "<br>";
-  logW.scrollTop = logW.scrollHeight; // 自動スクロール
+  logW.scrollTop = logW.scrollHeight;
 }
 
-// 進むボタンが押されたときの処理
+// ====================
+// 背景変更
+// ====================
+async function changeBackground(picPath) {
+  gameW.style.background = "black";
+  await wait(0.5);
+  gameW.style.backgroundSize = "cover";
+  gameW.style.backgroundPosition = "center";
+  gameW.style.backgroundImage = "url(" + picPath + ")";
+}
+
+// ====================
+// クリック待ち処理
+// ====================
+function waitForClick() {
+  return new Promise(resolve => {
+    const handler = () => {
+      logW.removeEventListener("click", handler);
+      resolve();
+    };
+    logW.addEventListener("click", handler);
+  });
+}
+
+// ====================
+// ゲーム開始
+// ====================
+startGame();
+
+
+// ====================
+// 前進処理
+// ====================
 async function moveForward() {
-	if (inBattle) return; // バトル中は無効にする
+  if (gameState.inBattle) return;
 
-	logW.innerHTML = "";
-	addMessage("あなたは奥へと進んだ。");
-	// 背景画像を入れ替えて進んだ風にする
-	if (randomChance(50)) {
-		await changeBackground('dungeon_back1.png')
-	} else {
-		await changeBackground('dungeon_back2.png')
-	}
-	await wait(1);
-	addMessage("・・・");
-	await wait(1);
-	addMessage("・・");
-	await wait(1);
-	addMessage("・");
+  logW.innerHTML = "";
+  addMessage("あなたは奥へと進んだ。");
 
-	// ここでイベント処理を入れる
-	const actionRoll = Math.random() * 100
-	if (actionRoll < 10) {
-		// 宝箱
-//	} else if (actionRoll < 30) {
-		// 何もなし
-//	} else if (actionRoll < 60) {
-		// イベント
-	} else if (actionRoll < 90) {
-		// 敵を出す
-		await startBattle("敵");
-	} else {
-		// 敵を出す強敵
-	}
-	// イベント処理終わり
+  await changeBackground(
+    randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png"
+  );
 
-	// イベント後の処理
-//	await wait(3);
-	// 一度メッセージをクリアしてから内容表示
-	logW.innerHTML = "";
-	addMessage("・");
-	await wait(1);
-	addMessage("・");
-	await wait(1);
+  await wait(1);
+  addMessage("・・・");
+  await wait(1);
+  addMessage("・・");
+  await wait(1);
+  addMessage("・");
 
-	// 階段の出る確率：12回進むと100％超え
-	let stairsChance = 5 + stepNum * 9;
-//	addMessage("階段の出る確率：" + stairsChance);
-	if (randomChance(stairsChance)) {
-		await changeBackground('dungeon_stairs.jpg')
-		addMessage("下への階段を見つけた！");
-		await wait(1);
-		addMessage("あなたは階段を下り、新たな階層に進んだ。");
-		await wait(1);
-		changeBackground('dungeon_entrance.png')
-		stepNum = 0;
-		floorNum = floorNum + 1;
-		document.getElementById("floorNum").textContent = floorNum;
+  // イベント判定
+  const roll = Math.random() * 100;
 
-	} else {
-		addMessage("まだ奥へ続いている…");
-		await wait(1);
-		addMessage("先に進もうか。");
-		stepNum = stepNum + 1;
-	}
+  if (roll < 70) {
+    // 戦闘
+    await startBattle(createEnemy());
+  } else {
+    addMessage("何も起こらなかった。");
+    await wait(1);
+  }
+
+  // 階段判定
+  const stairsChance = 5 + gameState.step * 9;
+  if (randomChance(stairsChance)) {
+    await changeBackground("dungeon_stairs.jpg");
+    addMessage("下への階段を見つけた！");
+    await wait(1);
+    addMessage("あなたは階段を下りた。");
+
+    gameState.floor++;
+    gameState.step = 0;
+    document.getElementById("floorNum").textContent = gameState.floor;
+
+    await changeBackground("dungeon_entrance.png");
+  } else {
+    gameState.step++;
+    addMessage("まだ奥へ続いている…");
+  }
 }
 
-// 休むボタンが押されたときの処理
+// ====================
+// 休憩
+// ====================
 async function rest() {
-	addMessage("あなたは少し休むことにした。");
-	await wait(1);
-	addMessage("・・・");
-	await wait(1);
-	addMessage("・・");
-	await wait(1);
-	addMessage("・");
-	await wait(2);
+  logW.innerHTML = "";
+  addMessage("あなたは休息を取った。");
+  await wait(1);
+
+  const heal = Math.min(
+    gameState.player.maxHp - gameState.player.hp,
+    5
+  );
+  gameState.player.hp += heal;
+
+  addMessage(`HPが${heal}回復した。`);
 }
 
-// ======== タップ式バトル関数 ========
-async function startBattle(enemyName) {
-	return new Promise(async (resolve) => {
-		inBattle = true;
-		// パラメータ設定
-		const D0 = 150;      // 円の初期直径(px)
-		let s_max = 0.5;    // 成功範囲上限（1がMAXなので、0.99あたりが）
-		let timingSpeed = 1.5;        // 1サイクル時間（s）
-	
-		//各ウィンドウを一旦クリア
-		logW.innerHTML = "";
-		gameW.style.background = "black";
+// ====================
+// 戦闘ロジック
+// ====================
+function calcDamage(attacker, defender) {
+  const base = attacker.atk - defender.def;
+  return Math.max(1, base + Math.floor(Math.random() * 3));
+}
 
-		addMessage(`${enemyName}が現れた！`);
-		await wait(1);
-		addMessage("攻撃タイミングを狙え！");
-		addMessage("（クリックして止める）");
+async function startBattle(enemy) {
+  gameState.inBattle = true;
+  logW.innerHTML = "";
 
-		// タイミングゾーン生成
-		const timingDiv = document.createElement("div");
-		timingDiv.style.position = "absolute";
-		timingDiv.style.left = "50%";
-		timingDiv.style.top = "50%";
-		timingDiv.style.transform = "translate(-50%, -50%)";
-		timingDiv.style.width = D0 + "px";
-		timingDiv.style.height = D0 + "px";
-		timingDiv.style.border = "3px solid white";
-		timingDiv.style.borderRadius = "50%";
-		timingDiv.style.transition = "all 1.5s linear";
-		gameW.appendChild(timingDiv);
+  addMessage(`${enemy.name}が現れた！`);
+  await wait(1);
 
-		// ======== 成功範囲の可視化（薄い緑の円） ========
-		const successZone = document.createElement("div");
-		successZone.style.position = "absolute";
-		successZone.style.left = "50%";
-		successZone.style.top = "50%";
-		successZone.style.transform = "translate(-50%, -50%) ";
-		const D_outer = D0 * s_max;
-		successZone.style.width = D_outer + "px";
-		successZone.style.height = D_outer + "px";
-		successZone.style.borderRadius = "50%";
-		successZone.style.background = "rgba(0,255,0,0.3)"; // うっすら緑
-		successZone.style.pointerEvents = "none"; // クリック判定を邪魔しない
-		timingDiv.appendChild(successZone);
-	
-		// 移動する円の描写
-		const inner = document.createElement("div");
-		inner.style.width = "100%";
-		inner.style.height = "100%";
-		inner.style.background = "rgba(255,0,0,0.2)";
-		inner.style.borderRadius = "50%";
-		timingDiv.appendChild(inner);
+  const player = gameState.player;
 
-		// 無限ループで縮小・拡大を繰り返す
-		let loop = true;
-		async function pulse() {
-			while (loop) {
-			inner.style.transition = "all " + timingSpeed + "s linear";	// timingSpeed秒かけて縮む
-			inner.style.transform = "scale(0)";							// 大きさ0にする
-			await wait(timingSpeed);
-			inner.style.transition = "all 0s"; // 戻す瞬間は即座に
-			inner.style.transform = "scale(1)";
-			await wait(0.1);
-			}
-		}
-		pulse(); // 開始
+  while (player.hp > 0 && enemy.hp > 0) {
+    // プレイヤー攻撃
+    const dmg = calcDamage(player, enemy);
+    enemy.hp -= dmg;
+    addMessage(`あなたの攻撃！ ${dmg}ダメージ`);
+    await wait(1);
 
-		// クリック判定
-		timingDiv.addEventListener("click", () => {
-			const transformValue = inner.style.transform;
-			const matrix = getComputedStyle(inner).transform;
-			const scale = parseFloat(matrix.split("(")[1].split(",")[0]);
-//	  const currentScale = parseFloat(transformValue.replace("scale(", "").replace(")", "")) || 1;
+    if (enemy.hp <= 0) break;
 
-			if (scale < s_max ) {
-				addMessage("会心の一撃！");
-				addMessage("敵を倒した！！");
-				//		playSE("hit.mp3");
-				loop = false;
-			} else {
-				addMessage("攻撃を外してしまった.．");
-				//		playSE("miss.mp3");
-				//		    gameW.removeChild(successZone);
-			}
-			// クリーンアップ
-			gameW.removeChild(timingDiv);
-			inBattle = false;
-			resolve();  // 戦闘終了
-		});
-	});
+    // 敵の攻撃
+    const edmg = calcDamage(enemy, player);
+    player.hp -= edmg;
+    addMessage(`${enemy.name}の攻撃！ ${edmg}ダメージ`);
+    await wait(1);
+  }
+
+  if (player.hp > 0) {
+    addMessage(`${enemy.name}を倒した！`);
+  } else {
+    addMessage("あなたは倒れた……");
+    // ここでゲームオーバー処理を入れられる
+  }
+
+  gameState.inBattle = false;
+}
+
+// ====================
+// 開始イベント
+// ====================
+async function startGame() {
+  logW.innerHTML = "";
+  await changeBackground("dungeon_entrance.png");
+
+  addMessage("ここは迷宮の入口だ。");
+  await wait(1);
+  addMessage("一歩進めば、もう戻れない。");
+  await wait(1);
+  addMessage("（クリックして冒険を始める）");
+
+  waitForClick().then(() => {
+    logW.innerHTML = "";
+    addMessage("あなたは迷宮へ足を踏み入れた。");
+  });
+}
+
+
+// ====================
+// 敵生成
+// ====================
+function createEnemy() {
+  const base = gameState.floor;
+
+  return {
+    name: "スケルトン",
+    hp: 10 + base * 2,
+    atk: 3 + base,
+    def: 1 + Math.floor(base / 2)
+  };
 }
