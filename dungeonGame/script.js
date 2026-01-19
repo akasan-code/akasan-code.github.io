@@ -50,6 +50,20 @@ async function changeBackground(picPath) {
 }
 
 // ====================
+// 画面へステータス反映
+// ====================
+function updateStatus() {
+  document.getElementById("floorNum").textContent =
+    gameState.floor;
+
+  document.getElementById("hp").textContent =
+    gameState.player.hp;
+
+  document.getElementById("lv").textContent =
+    gameState.player.level;
+}
+
+// ====================
 // クリック待ち処理
 // ====================
 function waitForClick() {
@@ -102,6 +116,7 @@ async function moveForward() {
     addMessage("あなたは階段を下りた。");
 
     gameState.floor++;
+    updateStatus();
     gameState.step = 0;
     document.getElementById("floorNum").textContent = gameState.floor;
 
@@ -127,6 +142,7 @@ async function rest() {
   gameState.player.hp += heal;
 
   addMessage(`HPが${heal}回復した。`);
+  updateStatus();
 }
 
 // ====================
@@ -151,6 +167,7 @@ async function startBattle(enemy) {
     const dmg = calcDamage(player, enemy);
     enemy.hp -= dmg;
     addMessage(`あなたの攻撃！ ${dmg}ダメージ`);
+    updateStatus();
     await wait(1);
 
     if (enemy.hp <= 0) break;
@@ -159,14 +176,15 @@ async function startBattle(enemy) {
     const edmg = calcDamage(enemy, player);
     player.hp -= edmg;
     addMessage(`${enemy.name}の攻撃！ ${edmg}ダメージ`);
+    updateStatus();
     await wait(1);
   }
 
   if (player.hp > 0) {
     addMessage(`${enemy.name}を倒した！`);
   } else {
-    addMessage("あなたは倒れた。。。");
-    // ここでゲームオーバー処理を入れられる
+    // 死亡イベント
+    gameOver()
   }
 
   gameState.inBattle = false;
@@ -179,6 +197,7 @@ async function startGame() {
   logW.innerHTML = "";
   commandW.style.display = "none"; // 念のため
 
+  updateStatus();
   await changeBackground("dungeon_entrance.png");
 
   addMessage("・・・");
@@ -240,6 +259,8 @@ async function gameOver() {
 
   // 表示リセット
   document.getElementById("floorNum").textContent = gameState.floor;
+
+  updateStatus();
 
   await startGame();
 }
