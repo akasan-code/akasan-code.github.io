@@ -61,9 +61,12 @@ function waitForClick() {
   });
 }
 
-// ====================
+// ★====================
 // ゲーム開始
-// ====================
+// ★====================
+const commandW = document.getElementById("command");
+commandW.style.display = "none"; // 最初は非表示
+
 startGame();
 
 
@@ -182,20 +185,41 @@ async function startBattle(enemy) {
 // ====================
 async function startGame() {
   logW.innerHTML = "";
+  commandW.style.display = "none"; // 念のため
+
   await changeBackground("dungeon_entrance.png");
 
-  addMessage("ここは迷宮の入口だ。");
+  addMessage("・・・");
   await wait(1);
-  addMessage("一歩進めば、もう戻れない。");
+  addMessage("・・");
+  await wait(1);
+  addMessage("・");
+  await wait(1);
+  addMessage("ここはどこだ。。。");
+  await wait(1);
+  addMessage("記憶がない。");
+  await wait(1);
+  addMessage("・・");
+  await wait(1);
+  addMessage("・");
+  await wait(1);
+  addMessage("ここは、どうやら迷宮の入り口のようだ。");
+  await wait(1);
+  addMessage("なぜか懐かしいような気もする。");
+  await wait(1);
+  addMessage("君は迷宮へ足を踏み入れる選択肢しか無いように思える。");
   await wait(1);
   addMessage("（クリックして冒険を始める）");
 
-  waitForClick().then(() => {
-    logW.innerHTML = "";
-    addMessage("あなたは迷宮へ足を踏み入れた。");
-  });
-}
+  await waitForClick();   // ← ここで完全に止まる
 
+  logW.innerHTML = "";
+  addMessage("あなたは迷宮へ足を踏み入れた。");
+  await wait(1);
+
+  // 👉 ここで command 解禁
+  commandW.style.display = "block";
+}
 
 // ====================
 // 敵生成
