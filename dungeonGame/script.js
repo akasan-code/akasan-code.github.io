@@ -59,6 +59,9 @@ function updateStatus() {
   document.getElementById("hp").textContent =
     gameState.player.hp;
 
+    document.getElementById("maxHp").textContent =
+    gameState.player.maxHp;
+
   document.getElementById("lv").textContent =
     gameState.player.level;
 }
