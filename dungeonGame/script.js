@@ -261,8 +261,6 @@ async function gameOver() {
   gameState = structuredClone(initialGameState);
 
   // 表示リセット
-  document.getElementById("floorNum").textContent = gameState.floor;
-
   updateStatus();
 
   await startGame();
