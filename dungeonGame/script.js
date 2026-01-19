@@ -33,7 +33,7 @@ function randomChance(chance) {
 }
 
 function addMessage(msg) {
-  logW.innerHTML = logW.innerHTML + "> " + message + "<br>";
+  logW.innerHTML = logW.innerHTML + "> " + msg + "<br>";
   logW.scrollTop = logW.scrollHeight;
 }
 
