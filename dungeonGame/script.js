@@ -17,7 +17,9 @@ const initialGameState = {
     hp: 20,
     maxHp: 20,
     atk: 5,
-    def: 2
+    def: 2,
+    weapon: "粗悪な鉄剣",
+    shield: null
   }
 };
 let gameState = structuredClone(initialGameState);
@@ -151,8 +153,33 @@ async function rest() {
 // ====================
 // 戦闘ロジック
 // ====================
+// 装備込みの攻撃力を計算
+function getPlayerAtk() {
+  const weaponAtk = gameState.player.weapon
+    ? gameState.player.weapon.atk
+    : 0;
+  return gameState.player.atk + weaponAtk;
+}
+// 装備込みの防御力を計算
+function getPlayerDef() {
+  const shieldDef = gameState.player.shield
+    ? gameState.player.shield.def
+    : 0;
+  return gameState.player.def + shieldDef;
+}
+// ダメージ計算
 function calcDamage(attacker, defender) {
-  const base = attacker.atk - defender.def;
+  const atk =
+    attacker === gameState.player
+      ? getPlayerAtk()
+      : attacker.atk;
+
+  const def =
+    defender === gameState.player
+      ? getPlayerDef()
+      : defender.def;
+
+  const base = atk - def;
   return Math.max(1, base + Math.floor(Math.random() * 3));
 }
 
@@ -280,6 +307,22 @@ function createEnemy() {
     def: 1 + Math.floor(base / 2)
   };
 }
+
+// ====================
+// 装備ライブラリ
+// ====================
+const weapons = [
+  { name: "粗悪な鉄剣", atk: 1 },
+  { name: "普通な鉄剣", atk: 4 },
+  { name: "上等な鉄剣", atk: 6 },
+];
+
+const shields = [
+  { name: "粗悪な木盾", def: 1 },
+  { name: "普通な木盾", def: 2 },
+  { name: "上等な木盾", def: 3 }
+];
+
 
 // ★====================
 // ゲーム開始
