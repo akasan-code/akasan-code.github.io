@@ -7,12 +7,12 @@ const gameW = document.getElementById("game");
 // ====================
 // ゲーム状態
 // ====================
-const gameState = {
+const initialGameState = {
   floor: 1,
   step: 0,
   inBattle: false,
   player: {
-    name: "あなた",
+    name: "キミ",
     level: 1,
     hp: 20,
     maxHp: 20,
@@ -20,6 +20,7 @@ const gameState = {
     def: 2
   }
 };
+let gameState = structuredClone(initialGameState);
 
 // ====================
 // Utility
@@ -60,15 +61,6 @@ function waitForClick() {
     logW.addEventListener("click", handler);
   });
 }
-
-// ★====================
-// ゲーム開始
-// ★====================
-const commandW = document.getElementById("command");
-commandW.style.display = "none"; // 最初は非表示
-
-startGame();
-
 
 // ====================
 // 前進処理
@@ -173,7 +165,7 @@ async function startBattle(enemy) {
   if (player.hp > 0) {
     addMessage(`${enemy.name}を倒した！`);
   } else {
-    addMessage("あなたは倒れた……");
+    addMessage("あなたは倒れた。。。");
     // ここでゲームオーバー処理を入れられる
   }
 
@@ -222,6 +214,38 @@ async function startGame() {
 }
 
 // ====================
+// 死亡イベント
+// ====================
+async function gameOver() {
+  gameState.inBattle = false;
+  commandW.style.display = "none";
+  logW.innerHTML = "";
+
+  addMessage("・・・");
+  await wait(1);
+  addMessage("・・");
+  await wait(1);
+  addMessage("・");
+  await wait(1);
+  addMessage("キミは力尽きた。");
+  await wait(2);
+  addMessage("すべてが闇に沈んでいく。。。");
+  await wait(2);
+  addMessage("（クリックして最初からやり直す）");
+
+  await waitForClick();
+
+  // 状態リセット
+  gameState = structuredClone(initialGameState);
+
+  // 表示リセット
+  document.getElementById("floorNum").textContent = gameState.floor;
+
+  await startGame();
+}
+
+
+// ====================
 // 敵生成
 // ====================
 function createEnemy() {
@@ -234,3 +258,18 @@ function createEnemy() {
     def: 1 + Math.floor(base / 2)
   };
 }
+
+// ★====================
+// ゲーム開始
+// ★====================
+const commandW = document.getElementById("command");
+commandW.style.display = "none"; // 最初は非表示
+
+startGame();
+
+addMessage("迷宮は続いている。");
+await wait(1);
+addMessage("どう行動するか？");
+await wait(1);
+
+
