@@ -291,9 +291,6 @@ commandW.style.display = "none"; // 最初は非表示
 
 startGame();
 
-addMessage("迷宮は続いている。");
-await wait(1);
 addMessage("どう行動するか？");
-await wait(1);
 
 
