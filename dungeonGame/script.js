@@ -171,18 +171,24 @@ function getPlayerDef() {
 }
 // ダメージ計算
 function calcDamage(attacker, defender) {
-  const atk =
-    attacker === gameState.player
-      ? getPlayerAtk()
-      : attacker.atk;
+  let atk
+  let def
+  
+  if attacker === gameState.player {
+    atk = getPlayerAtk();
+  } else {
+    atk = attacker.atk;
+  }
+  if defender === gameState.player {
+    def = getPlayerDef();
+  } else {
+    def = defender.def;
+  }
+  const baseDamage = atk - def;
 
-  const def =
-    defender === gameState.player
-      ? getPlayerDef()
-      : defender.def;
-
-  const base = atk - def;
-  return Math.max(1, base + Math.floor(Math.random() * 3));
+  console.log("atk:" + atk);
+  console.log("def:" + def);
+  return Math.max(1, baseDamage + Math.floor(Math.random() * 3));
 }
 
 async function startBattle(enemy) {
