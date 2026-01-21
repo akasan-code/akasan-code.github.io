@@ -19,8 +19,8 @@ const initialGameState = {
     maxHp: 20,
     baseAtk: 5,
     baseDef: 2,
-    weapon: "粗悪な鉄剣",
-    shield: null
+    weapon: { name: "粗悪な鉄剣", atk: 1 },
+    shield: { name: "なし", def: 0 }
   }
 };
 let gameState = structuredClone(initialGameState);
@@ -111,7 +111,7 @@ async function moveForward() {
   // イベント判定
   const roll = Math.random() * 100;
 
-  if (roll < 70) {
+  if (roll < 90) {
     // 戦闘
     await startBattle(createEnemy());
   } else {
@@ -174,8 +174,7 @@ function getPlayerDef() {
 function calcDamage(attacker, defender) {
   let atk
   let def
-    console.log("attacker:" + attacker);
-    console.log("defender:" + defender);
+    
   if (attacker === gameState.player) {
     atk = getPlayerAtk();
   } else {
