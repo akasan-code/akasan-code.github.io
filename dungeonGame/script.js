@@ -174,13 +174,14 @@ function getPlayerDef() {
 function calcDamage(attacker, defender) {
   let atk
   let def
-  
-  if attacker === gameState.player {
+    console.log("attacker:" + attacker);
+    console.log("defender:" + defender);
+  if attacker.name === gameState.player {
     atk = getPlayerAtk();
   } else {
     atk = attacker.atk;
   }
-  if defender === gameState.player {
+  if defender.name === gameState.player {
     def = getPlayerDef();
   } else {
     def = defender.def;
