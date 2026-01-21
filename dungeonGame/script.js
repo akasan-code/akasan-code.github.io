@@ -68,10 +68,10 @@ function updateStatus() {
     gameState.player.level;
 
   document.getElementById("weapon").textContent =
-    p.weapon ? p.weapon.name : "なし";
+    gameState.player.weapon ? gameState.player.weapon.name : "なし";
 
   document.getElementById("shield").textContent =
-    p.shield ? p.shield.name : "なし";
+    gameState.player.shield ? gameState.player.shield.name : "なし";
 }
 
 // ====================
