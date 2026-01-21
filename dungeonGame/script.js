@@ -16,8 +16,8 @@ const initialGameState = {
     level: 1,
     hp: 20,
     maxHp: 20,
-    atk: 5,
-    def: 2,
+    baseAtk: 5,
+    baseDef: 2,
     weapon: "粗悪な鉄剣",
     shield: null
   }
