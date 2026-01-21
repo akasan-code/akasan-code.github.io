@@ -3,6 +3,7 @@
 // ====================
 const logW = document.getElementById("log");
 const gameW = document.getElementById("game");
+const commandW = document.getElementById("commands");
 
 // ====================
 // ゲーム状態
@@ -386,8 +387,7 @@ const dropTables = [
 // ★====================
 // ゲーム開始
 // ★====================
-const commandW = document.getElementById("command");
-//commandW.style.display = "none"; // 最初は非表示
+commandW.style.display = "none"; // 最初は非表示
 
 startGame();
 
