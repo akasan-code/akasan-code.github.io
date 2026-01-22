@@ -16,7 +16,7 @@ const initialGameState = {
     name: "キミ",
     level: 1,
     exp: 0,
-    nextExp: 10,
+    nextExp: 20,
     hp: 20,
     maxHp: 20,
     baseAtk: 5,
@@ -26,6 +26,32 @@ const initialGameState = {
   }
 };
 let gameState = structuredClone(initialGameState);
+let eternalState = loadEternalState();
+
+function loadEternalState() {
+  const saved = localStorage.getItem("eternalState");
+
+  if (saved) {
+    return JSON.parse(saved);
+  }
+
+  // 初回起動時
+  return {
+    atk: 0,
+    def: 0,
+    maxHp: 0,
+    exp: 0
+  };
+}
+// 恒久ボーナスの反映処理
+function applyEternalBonus() {
+  const p = gameState.player;
+
+  p.baseAtk += eternalState.atk;
+  p.baseDef += eternalState.def;
+  p.maxHp   += eternalState.maxHp;
+  p.hp      = p.maxHp;
+}
 
 // ====================
 // Utility
@@ -253,10 +279,10 @@ function levelUp() {
 
   p.exp -= p.nextExp;
   p.level++;
-  p.nextExp = Math.floor(p.nextExp * 1.5);
+  p.nextExp = 10 * level * level + 10;
 
   const hpUp = 5;
-  const atkUp = 1;
+  const atkUp = 2;
   const defUp = 1;
 
   p.maxHp += hpUp;
@@ -286,6 +312,8 @@ async function handleDrop(enemy) {
 async function startGame() {
   logW.innerHTML = "";
   commandW.style.display = "none"; // 念のため
+
+  applyEternalBonus();            // 恒久ボーナスを適用
 
   updateStatus();
   await changeBackground("dungeon_entrance.png");
