@@ -15,6 +15,8 @@ const initialGameState = {
   player: {
     name: "キミ",
     level: 1,
+    exp: 0,
+    nextExp: 10,
     hp: 20,
     maxHp: 20,
     baseAtk: 5,
@@ -93,6 +95,7 @@ function waitForClick() {
 // ====================
 async function moveForward() {
   if (gameState.inBattle) return;
+  commandW.style.display = "none"; // commandボタンを消す
 
   logW.innerHTML = "";
   addMessage("あなたは奥へと進んだ。");
@@ -101,8 +104,6 @@ async function moveForward() {
     randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png"
   );
 
-  await wait(1);
-  addMessage("・・・");
   await wait(1);
   addMessage("・・");
   await wait(1);
@@ -115,8 +116,8 @@ async function moveForward() {
     // 戦闘
     await startBattle(createEnemy());
   } else {
-    addMessage("何も起こらなかった。");
-    await wait(1);
+//    addMessage("何も起こらなかった。");
+//    await wait(1);
   }
 
   // 階段判定
@@ -137,6 +138,8 @@ async function moveForward() {
     gameState.step++;
     addMessage("まだ奥へ続いている…");
   }
+  // ここで command 解禁
+  commandW.style.display = "block";
 }
 
 // ====================
@@ -221,6 +224,8 @@ async function startBattle(enemy) {
 
   if (player.hp > 0) {
     addMessage(`${enemy.name}を倒した！`);
+    gainExp(enemy.exp);
+    await handleDrop(enemy);
   } else {
     // 死亡イベント
     gameOver()
@@ -228,25 +233,51 @@ async function startBattle(enemy) {
 
   gameState.inBattle = false;
 }
+// ====================
+// レベルアップ処理
+// ====================
+function gainExp(amount) {
+  const p = gameState.player;
+
+  addMessage(`経験値を${amount}得た。`);
+  p.exp += amount;
+
+  while (p.exp >= p.nextExp) {
+    levelUp();
+  }
+
+  updateStatus();
+}
+function levelUp() {
+  const p = gameState.player;
+
+  p.exp -= p.nextExp;
+  p.level++;
+  p.nextExp = Math.floor(p.nextExp * 1.5);
+
+  const hpUp = 5;
+  const atkUp = 1;
+  const defUp = 1;
+
+  p.maxHp += hpUp;
+  p.baseAtk += atkUp;
+  p.baseDef += defUp;
+  p.hp = p.maxHp;
+
+  addMessage(`レベルアップした！ Lv.${p.level}`);
+//  addMessage(`HP +${hpUp} / 攻撃 +${atkUp} / 防御 +${defUp}`);
+}
 
 // ====================
 // ドロップ処理
 // ====================
-async function tryDropItem() {
-  if (randomChance(10)) {
-    // 50%で武器 or 盾
-    if (randomChance(50)) {
-      const weapon = weapons[Math.floor(Math.random() * weapons.length)];
-      gameState.player.weapon = weapon;
-      addMessage(`${weapon.name}を手に入れた！`);
-      addMessage(`${weapon.name}を装備した。`);
-    } else {
-      const shield = shields[Math.floor(Math.random() * shields.length)];
-      gameState.player.shield = shield;
-      addMessage(`${shield.name}を手に入れた！`);
-      addMessage(`${shield.name}を装備した。`);
-    }
+async function handleDrop(enemy) {
+  if (enemy.dropItem) {
+    addMessage(`${enemy.dropItem.name}を手に入れた！`);
+    await equipItem(enemy.dropItem);
   }
+
+  updateStatus();
 }
 
 // ====================
@@ -270,8 +301,6 @@ async function startGame() {
   addMessage("記憶がない。");
   await wait(1);
   addMessage("・・");
-  await wait(1);
-  addMessage("・");
   await wait(1);
   addMessage("ここは、どうやら迷宮の入り口のようだ。");
   await wait(1);
@@ -299,8 +328,6 @@ async function gameOver() {
   commandW.style.display = "none";
   logW.innerHTML = "";
 
-  addMessage("・・・");
-  await wait(1);
   addMessage("・・");
   await wait(1);
   addMessage("・");
@@ -328,12 +355,32 @@ async function gameOver() {
 // ====================
 function createEnemy() {
   const base = gameState.floor;
+  let addAtk = 0;
+  let addDef = 0;
+
+  // ドロップ判定して、敵に装備させる
+  const drop = tryDrop();
+  console.log(drop);
+  if (drop) {
+    if (drop.type === "weapon") {
+      addAtk = drop.atk;
+      addDef = 0;
+    } else {
+      addAtk = 0;
+      addDef = drop.def;
+    }
+  } else {
+//    addMessage("しかし何も落ちなかった。");
+  }
 
   return {
     name: "スケルトン",
     hp: 10 + base * 2,
-    atk: 3 + base,
-    def: 1 + Math.floor(base / 2)
+    atk: 3 + base + addAtk,
+    def: 1 + Math.floor(base / 2) + addDef,
+    // 倒した時に落とす候補
+    dropItem: drop,
+    exp: 3 + base * 2
   };
 }
 
@@ -383,6 +430,51 @@ const dropTables = [
     ]
   }
 ];
+
+// ★====================
+// アイテムドロップ判定処理
+// ★====================
+// そもそも落ちるか（10%）
+function tryDrop() {
+  if (!randomChance(80)) return null;
+
+  const table = getDropTable(gameState.floor);
+  return weightedRandom(table);
+}
+// ドロップテーブルを取得
+function getDropTable(floor) {
+  return dropTables
+    .filter(t => t.minFloor <= floor)
+    .at(-1).table;
+}
+// アイテム抽選
+function weightedRandom(table) {
+  const total = table.reduce((sum, e) => sum + e.weight, 0);
+  let roll = Math.random() * total;
+
+  for (const e of table) {
+    roll -= e.weight;
+    if (roll <= 0) return e.item;
+  }
+}
+
+// ★====================
+// アイテム装備
+function equipItem(item) {
+  const p = gameState.player;
+
+  if (item.type === "weapon" && p.weapon.atk < item.atk) {
+    p.weapon = item;
+    addMessage(`${item.name}を装備した。`);
+  }
+
+  if (item.type === "shield" && p.shield.def < item.def) {
+    p.shield = item;
+    addMessage(`${item.name}を装備した。`);
+  }
+
+  updateStatus();
+}
 
 // ★====================
 // ゲーム開始
