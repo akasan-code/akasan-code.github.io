@@ -136,9 +136,10 @@ async function moveForward() {
   addMessage("・");
 
   // イベント判定
+  // 0-60 戦闘、61-70 ？？？
   const roll = Math.random() * 100;
 
-  if (roll < 90) {
+  if (roll < 60) {
     // 戦闘
     await startBattle(createEnemy());
   } else {
@@ -172,18 +173,31 @@ async function moveForward() {
 // 休憩
 // ====================
 async function rest() {
+  commandW.style.display = "none"; // コマンドを消す
+
   logW.innerHTML = "";
   addMessage("あなたは休息を取った。");
   await wait(1);
 
-  const heal = Math.min(
-    gameState.player.maxHp - gameState.player.hp,
-    5
-  );
-  gameState.player.hp += heal;
+  // イベント判定
+  // 0-29 戦闘、30-100 休息
+  const roll = Math.random() * 100;
 
-  addMessage(`HPが${heal}回復した。`);
-  updateStatus();
+  if (roll < 30) {
+    // 戦闘
+    await startBattle(createEnemy());
+  } else {
+    // 休憩
+    const heal = Math.min(
+      gameState.player.maxHp - gameState.player.hp,
+      Math.floor(gameState.player.maxHp * 0.1)
+    );
+    gameState.player.hp += heal;
+
+    addMessage(`HPが${heal}回復した。`);
+    updateStatus();
+  }
+  commandW.style.display = "block"; // command 解禁
 }
 
 // ====================
@@ -279,7 +293,7 @@ function levelUp() {
 
   p.exp -= p.nextExp;
   p.level++;
-  p.nextExp = 10 * level * level + 10;
+  p.nextExp = 10 * p.level * p.level + 10;
 
   const hpUp = 5;
   const atkUp = 2;
@@ -403,9 +417,9 @@ function createEnemy() {
 
   return {
     name: "スケルトン",
-    hp: 10 + base * 2,
-    atk: 3 + base + addAtk,
-    def: 1 + Math.floor(base / 2) + addDef,
+    hp: 10 + base * 5,
+    atk: 3 + base * 2 + addAtk,
+    def: 1 + base + addDef,
     // 倒した時に落とす候補
     dropItem: drop,
     exp: 3 + base * 2
@@ -462,9 +476,9 @@ const dropTables = [
 // ★====================
 // アイテムドロップ判定処理
 // ★====================
-// そもそも落ちるか（10%）
+// そもそも落ちるか（20%）
 function tryDrop() {
-  if (!randomChance(80)) return null;
+  if (!randomChance(20)) return null;
 
   const table = getDropTable(gameState.floor);
   return weightedRandom(table);
@@ -511,6 +525,5 @@ commandW.style.display = "none"; // 最初は非表示
 
 startGame();
 
-addMessage("どう行動するか？");
 
 
