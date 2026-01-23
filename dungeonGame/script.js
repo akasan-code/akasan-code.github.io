@@ -6,12 +6,25 @@ const gameW = document.getElementById("game");
 const commandW = document.getElementById("commands");
 
 // ====================
+// enum定義
+// ====================
+const UI_MODE = Object.freeze({
+  NORMAL: "NORMAL",
+  ETERNAL: "ETERNAL",
+  BATTLE: "BATTLE",
+  NONE: "NONE"
+});
+const BATTLE_RESULT = Object.freeze({
+  WIN: "WIN",
+  LOSE: "LOSE"
+});
+
+// ====================
 // ゲーム状態
 // ====================
 const initialGameState = {
   floor: 1,
   step: 0,
-  inBattle: false,
   player: {
     name: "キミ",
     level: 1,
@@ -28,6 +41,7 @@ const initialGameState = {
 let gameState = structuredClone(initialGameState);
 let eternalState = loadEternalState();
 
+// 恒久ボーナスの読み込み処理
 function loadEternalState() {
   const saved = localStorage.getItem("eternalState");
 
@@ -37,8 +51,11 @@ function loadEternalState() {
 
   // 初回起動時
   return {
+    atkLv: 1,
     atk: 0,
+    defLv: 1,
     def: 0,
+    hpLv: 1,
     maxHp: 0,
     exp: 0
   };
@@ -52,7 +69,13 @@ function applyEternalBonus() {
   p.maxHp   += eternalState.maxHp;
   p.hp      = p.maxHp;
 }
-
+// 恒久ボーナスの保存処理
+function saveEternalState() {
+  localStorage.setItem(
+    "eternalState",
+    JSON.stringify(eternalState)
+  );
+}
 // ====================
 // Utility
 // ====================
@@ -81,26 +104,70 @@ async function changeBackground(picPath) {
 }
 
 // ====================
+// コマンドボタンの制御
+// ====================
+function clearCommands() {
+  commandW.innerHTML = "";
+}
+function addCommand(label, onClick) {
+  const btn = document.createElement("button");
+  btn.textContent = label;
+  btn.style.margin = "6px";
+  btn.onclick = onClick;
+  commandW.appendChild(btn);
+}
+function showNormalCommands() {
+  clearCommands();
+  addCommand("進む", moveForward);
+  addCommand("休む", rest);
+}
+function showEternalUpgradeCommands() {
+  clearCommands();
+
+  const atkCost = getUpgradeCost("atk");
+  const defCost = getUpgradeCost("def");
+  const hpCost  = getUpgradeCost("hp");
+
+  addCommand(`攻撃力 +2（${atkCost}EXP）`, async () => {
+    await handleEternalUpgrade("atk");
+  });
+
+  addCommand(`防御力 +1（${defCost}EXP）`, async () => {
+    await handleEternalUpgrade("def");
+  });
+
+  addCommand(`最大HP +5（${hpCost}EXP）`, async () => {
+    await handleEternalUpgrade("hp");
+  });
+
+  addCommand("今回は強化しない", async () => {
+    await handleEternalUpgrade("skip");
+  });
+}
+function setUIMode(mode) {
+  if (mode === UI_MODE.NORMAL) {
+    showNormalCommands();
+  }
+  if (mode === UI_MODE.ETERNAL) {
+    showEternalUpgradeCommands();
+  }
+  if (mode === UI_MODE.BATTLE || mode === UI_MODE.NONE) {
+    clearCommands();
+  }
+}
+
+// ====================
 // 画面へステータス反映
 // ====================
 function updateStatus() {
-  document.getElementById("floorNum").textContent =
-    gameState.floor;
+  document.getElementById("floorNum").textContent = gameState.floor;
+  document.getElementById("hp").textContent = gameState.player.hp;
+  document.getElementById("maxHp").textContent = gameState.player.maxHp;
+  document.getElementById("lv").textContent = gameState.player.level;
+  document.getElementById("weapon").textContent = gameState.player.weapon ? gameState.player.weapon.name : "なし";
+  document.getElementById("shield").textContent = gameState.player.shield ? gameState.player.shield.name : "なし";
 
-  document.getElementById("hp").textContent =
-    gameState.player.hp;
-
-    document.getElementById("maxHp").textContent =
-    gameState.player.maxHp;
-
-  document.getElementById("lv").textContent =
-    gameState.player.level;
-
-  document.getElementById("weapon").textContent =
-    gameState.player.weapon ? gameState.player.weapon.name : "なし";
-
-  document.getElementById("shield").textContent =
-    gameState.player.shield ? gameState.player.shield.name : "なし";
+  document.getElementById("eternalExp").textContent = eternalState.exp;
 }
 
 // ====================
@@ -120,7 +187,6 @@ function waitForClick() {
 // 前進処理
 // ====================
 async function moveForward() {
-  if (gameState.inBattle) return;
   commandW.style.display = "none"; // commandボタンを消す
 
   logW.innerHTML = "";
@@ -141,7 +207,10 @@ async function moveForward() {
 
   if (roll < 60) {
     // 戦闘
-    await startBattle(createEnemy());
+    const battleResult = await startBattle(createEnemy());
+    if (battleResult === BATTLE_RESULT.LOSE) {
+      return;
+    }
   } else {
 //    addMessage("何も起こらなかった。");
 //    await wait(1);
@@ -155,6 +224,8 @@ async function moveForward() {
     await wait(1);
     addMessage("あなたは階段を下りた。");
 
+    eternalState.exp += gameState.floor * 10    // 恒久経験値をゲット
+    saveEternalState();                         // ストレージ保存
     gameState.floor++;
     updateStatus();
     gameState.step = 0;
@@ -236,7 +307,6 @@ function calcDamage(attacker, defender) {
 }
 
 async function startBattle(enemy) {
-  gameState.inBattle = true;
   logW.innerHTML = "";
 
   addMessage(`${enemy.name}が現れた！`);
@@ -266,12 +336,12 @@ async function startBattle(enemy) {
     addMessage(`${enemy.name}を倒した！`);
     gainExp(enemy.exp);
     await handleDrop(enemy);
+    return BATTLE_RESULT.WIN;
   } else {
     // 死亡イベント
-    gameOver()
+    await gameOver();
+    return BATTLE_RESULT.LOSE;
   }
-
-  gameState.inBattle = false;
 }
 // ====================
 // レベルアップ処理
@@ -325,7 +395,8 @@ async function handleDrop(enemy) {
 // ====================
 async function startGame() {
   logW.innerHTML = "";
-  commandW.style.display = "none"; // 念のため
+//  commandW.style.display = "none"; // 念のため
+  setUIMode(UI_MODE.NONE); // 操作不能
 
   applyEternalBonus();            // 恒久ボーナスを適用
 
@@ -358,16 +429,15 @@ async function startGame() {
   addMessage("あなたは迷宮へ足を踏み入れた。");
   await wait(1);
 
-  // 👉 ここで command 解禁
-  commandW.style.display = "block";
+  setUIMode(UI_MODE.NORMAL); // 通常commandに変更
+
 }
 
 // ====================
 // 死亡イベント
 // ====================
 async function gameOver() {
-  gameState.inBattle = false;
-  commandW.style.display = "none";
+  setUIMode(UI_MODE.NONE); // 操作不能
   logW.innerHTML = "";
 
   addMessage("・・");
@@ -517,11 +587,59 @@ function equipItem(item) {
 
   updateStatus();
 }
+// 恒久強化テーブル
+function getUpgradeCost(type) {
+  const config = {
+    atk: { base: 10, growth: 4, lv: eternalState.atkLv },
+    def: { base: 10, growth: 5, lv: eternalState.defLv },
+    hp:  { base: 10, growth: 3, lv: eternalState.hpLv }
+  };
+
+  const c = config[type];
+  return Math.floor(c.base * (c.growth * c.lv));
+}
+
+function handleEternalUpgrade(type) {
+  clearCommands();
+
+  if (type === "skip") {
+    addMessage("あなたは力を温存した。");
+    restartGameFromEternal();
+    return;
+  }
+
+  const cost = getUpgradeCost(type);
+
+  if (eternalState.exp < cost) {
+    addMessage("恒久EXPが足りない……");
+    setUIMode(UI_MODE.ETERNAL); // 再表示
+    return;
+  }
+
+  eternalState.exp -= cost;
+
+  if (type === "atk") {
+    eternalState.atkLv++;
+    eternalState.atk += 2;
+  }
+  if (type === "def") {
+    eternalState.defLv++;
+    eternalState.def += 1;
+  }
+  if (type === "hp") {
+    eternalState.hpLv++;
+    eternalState.maxHp += 5;
+  } 
+
+  saveEternalState();
+  addMessage("魂に新たな力が刻まれた。");
+  restartGameFromEternal();
+}
 
 // ★====================
 // ゲーム開始
 // ★====================
-commandW.style.display = "none"; // 最初は非表示
+setUIMode(UI_MODE.NONE); // 最初は非表示
 
 startGame();
 
