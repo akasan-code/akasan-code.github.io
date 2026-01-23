@@ -123,6 +123,7 @@ function showNormalCommands() {
 }
 function showEternalUpgradeCommands() {
   clearCommands();
+  commandW.style.display = "block";
 
   const atkCost = getUpgradeCost("atk");
   const defCost = getUpgradeCost("def");
@@ -448,17 +449,21 @@ async function gameOver() {
   await wait(2);
   addMessage("すべてが闇に沈んでいく。。。");
   await wait(2);
-  addMessage("（クリックして最初からやり直す）");
+  addMessage("（クリックして最初から?やり直す）");
 
   await waitForClick();
 
   // 状態リセット
   gameState = structuredClone(initialGameState);
 
+  enterEternalUpgrade();
+ /*
+
   // 表示リセット
   updateStatus();
 
   await startGame();
+*/
 }
 
 
@@ -599,12 +604,22 @@ function getUpgradeCost(type) {
   return Math.floor(c.base * (c.growth * c.lv));
 }
 
-function handleEternalUpgrade(type) {
+function enterEternalUpgrade() {
+  logW.innerHTML = "";
+
+  addMessage("魂は迷宮に刻まれた。");
+  addMessage("恒久的な力を得ることができる。");
+  addMessage("（強化を選択する）");
+
+  setUIMode(UI_MODE.ETERNAL);
+}
+
+async function handleEternalUpgrade(type) {
   clearCommands();
 
   if (type === "skip") {
     addMessage("あなたは力を温存した。");
-    restartGameFromEternal();
+    startGame();
     return;
   }
 
@@ -633,7 +648,7 @@ function handleEternalUpgrade(type) {
 
   saveEternalState();
   addMessage("魂に新たな力が刻まれた。");
-  restartGameFromEternal();
+  startGame();
 }
 
 // ★====================
