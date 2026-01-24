@@ -29,7 +29,7 @@ const initialGameState = {
     name: "キミ",
     level: 1,
     exp: 0,
-    nextExp: 20,
+    nextExp: 10,
     hp: 20,
     maxHp: 20,
     baseAtk: 5,
