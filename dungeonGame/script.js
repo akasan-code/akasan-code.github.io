@@ -82,7 +82,7 @@ function saveEternalState() {
 // Utility
 // ====================
 function wait(sec) {
-  return new Promise(r => setTimeout(r, sec * 1000));
+  return new Promise(r => setTimeout(r, sec * 800));
 }
 
 function randomChance(chance) {
@@ -234,7 +234,7 @@ async function moveForward() {
   if (randomChance(stairsChance)) {
     await changeBackground("dungeon_stairs.jpg");
     addMessage("下への階段を見つけた！");
-    await wait(1);
+    await wait(3);
     addMessage("あなたは階段を下りた。");
 
     eternalState.exp += gameState.floor * 10    // 恒久経験値をゲット
@@ -322,6 +322,7 @@ function calcDamage(attacker, defender) {
 async function startBattle(enemy) {
   logW.innerHTML = "";
 
+  showEventImage(enemy.image);          // 画像表示
   addMessage(`${enemy.name}が現れた！`);
   await wait(1);
 
@@ -348,9 +349,11 @@ async function startBattle(enemy) {
   if (player.hp > 0) {
     addMessage(`${enemy.name}を倒した！`);
     gainExp(enemy.exp);
+    hideEventImage();
     await handleDrop(enemy);
     return BATTLE_RESULT.WIN;
   } else {
+    hideEventImage();
     // 死亡イベント
     await gameOver();
     return BATTLE_RESULT.LOSE;
@@ -504,6 +507,7 @@ function createEnemy() {
 
   return {
     name: "スケルトン",
+    image: "enemy_skeleton.jpeg",
     hp: 10 + base * 5,
     atk: 3 + base * 2 + addAtk,
     def: 1 + base + addDef,
