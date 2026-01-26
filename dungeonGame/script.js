@@ -224,9 +224,15 @@ async function moveForward() {
     if (battleResult === BATTLE_RESULT.LOSE) {
       return;
     }
+  } else if (roll >= 60 && roll < 70) {
+//    泉
+  } else if (roll >= 70 && roll < 80) {
+//    宝箱
+    await startTreasureEvent();
+  } else if (roll >= 80 && roll < 90) {
+//    道分岐
   } else {
-//    addMessage("何も起こらなかった。");
-//    await wait(1);
+//    何もなし
   }
 
   // 階段判定
@@ -665,6 +671,30 @@ async function handleEternalUpgrade(type) {
   saveEternalState();
   addMessage("魂に新たな力が刻まれた。");
   startGame();
+}
+
+// 宝箱のイベント
+async function startTreasureEvent() {
+  setUIMode(UI_MODE.NONE);
+
+  showEventImage("ivent_closechest.jpeg");         // 開ける前の画像
+
+  addMessage("宝箱を見つけた！");
+  await wait(3);
+
+  const table = getDropTable(gameState.floor);
+  const item = weightedRandom(table);
+
+  showEventImage("ivent_openchest.jpeg");          // 開けた後の画像
+  
+  addMessage(`${item.name}を手に入れた！`);
+  await wait(3);
+  equipItem(item);
+  updateStatus();
+
+  hideEventImage();
+
+  setUIMode(UI_MODE.NORMAL);
 }
 
 // ★====================
