@@ -203,7 +203,7 @@ async function moveForward() {
   commandW.style.display = "none"; // commandボタンを消す
 
   logW.innerHTML = "";
-  addMessage("あなたは奥へと進んだ。");
+  addMessage("キミは奥へと進んだ。");
 
   await changeBackground(
     randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png"
@@ -241,7 +241,7 @@ async function moveForward() {
     await changeBackground("dungeon_stairs.jpg");
     addMessage("下への階段を見つけた！");
     await wait(3);
-    addMessage("あなたは階段を下りた。");
+    addMessage("キミは階段を下りた。");
 
     eternalState.exp += gameState.floor * 10    // 恒久経験値をゲット
     saveEternalState();                         // ストレージ保存
@@ -266,7 +266,7 @@ async function rest() {
   setUIMode(UI_MODE.NONE);            // コマンドを消す
 
   logW.innerHTML = "";
-  addMessage("あなたは休息を取った。");
+  addMessage("キミは休息を取った。");
   await wait(1);
 
   // イベント判定
@@ -338,7 +338,7 @@ async function startBattle(enemy) {
     // プレイヤー攻撃
     const dmg = calcDamage(player, enemy);
     enemy.hp -= dmg;
-    addMessage(`あなたの攻撃！ ${dmg}ダメージ`);
+    addMessage(`キミの攻撃！ ${dmg}ダメージ`);
     updateStatus();
     await wait(1);
 
@@ -440,14 +440,14 @@ async function startGame() {
   await wait(1);
   addMessage("なぜか懐かしいような気もする。");
   await wait(1);
-  addMessage("君は迷宮へ足を踏み入れる選択肢しか無いように思える。");
+  addMessage("キミは迷宮へ足を踏み入れる選択肢しか無いように思える。");
   await wait(1);
   addMessage("（クリックして冒険を始める）");
 
   await waitForClick();   // ← ここで完全に止まる
 
   logW.innerHTML = "";
-  addMessage("あなたは迷宮へ足を踏み入れた。");
+  addMessage("キミは迷宮へ足を踏み入れた。");
   await wait(1);
 
   setUIMode(UI_MODE.NORMAL); // 通常commandに変更
@@ -566,6 +566,15 @@ const dropTables = [
       { item: shields.woodMidQuality,  weight: 30 },
       { item: shields.woodHighQuality,  weight: 5 }
     ]
+  },
+  {
+    minFloor: 8,
+    table: [
+      { item: weapons.ironMidQuality, weight: 30 },
+      { item: weapons.ironHighQuality, weight: 30 },
+      { item: shields.woodMidQuality,  weight: 20 },
+      { item: shields.woodHighQuality,  weight: 20 }
+    ]
   }
 ];
 
@@ -628,8 +637,9 @@ function getUpgradeCost(type) {
 function enterEternalUpgrade() {
   logW.innerHTML = "";
 
-  addMessage("魂は迷宮に刻まれた。");
-  addMessage("恒久的な力を得ることができる。");
+  addMessage("魂に経験が刻まれている。");
+  addMessage("キミはその経験を次に活かしてもいいし、");
+  addMessage("経験を温存してもいい。");
   addMessage("（強化を選択する）");
 
   setUIMode(UI_MODE.ETERNAL);
@@ -639,7 +649,7 @@ async function handleEternalUpgrade(type) {
   clearCommands();
 
   if (type === "skip") {
-    addMessage("あなたは力を温存した。");
+    addMessage("キミは力を温存した。");
     startGame();
     return;
   }
@@ -668,7 +678,7 @@ async function handleEternalUpgrade(type) {
   } 
 
   saveEternalState();
-  addMessage("魂に新たな力が刻まれた。");
+  addMessage("魂に新たな力が宿る！");
   startGame();
 }
 
