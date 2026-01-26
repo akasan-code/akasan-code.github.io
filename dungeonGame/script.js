@@ -4,6 +4,8 @@
 const logW = document.getElementById("log");
 const gameW = document.getElementById("game");
 const commandW = document.getElementById("commands");
+const eventWindow = document.getElementById("eventWindow");
+const eventImage  = document.getElementById("eventImage");
 
 // ====================
 // enum定義
@@ -90,6 +92,16 @@ function randomChance(chance) {
 function addMessage(msg) {
   logW.innerHTML = logW.innerHTML + "> " + msg + "<br>";
   logW.scrollTop = logW.scrollHeight;
+}
+
+function showEventImage(src) {
+  eventImage.src = src;
+  eventWindow.style.display = "flex";
+}
+
+function hideEventImage() {
+  eventWindow.style.display = "none";
+  eventImage.src = "";
 }
 
 // ====================
