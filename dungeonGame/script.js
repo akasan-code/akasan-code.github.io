@@ -263,7 +263,7 @@ async function moveForward() {
 // 休憩
 // ====================
 async function rest() {
-  commandW.style.display = "none"; // コマンドを消す
+  setUIMode(UI_MODE.NONE);            // コマンドを消す
 
   logW.innerHTML = "";
   addMessage("あなたは休息を取った。");
@@ -417,7 +417,6 @@ async function handleDrop(enemy) {
 // ====================
 async function startGame() {
   logW.innerHTML = "";
-//  commandW.style.display = "none"; // 念のため
   setUIMode(UI_MODE.NONE); // 操作不能
 
   applyEternalBonus();            // 恒久ボーナスを適用
@@ -684,6 +683,11 @@ async function startTreasureEvent() {
 
   const table = getDropTable(gameState.floor);
   const item = weightedRandom(table);
+  // 今の所ありえないが、念のため空だった時の処理
+  if (!item) {
+    addMessage("中は空だった…");
+    return;
+  }
 
   showEventImage("ivent_openchest.jpeg");          // 開けた後の画像
   
