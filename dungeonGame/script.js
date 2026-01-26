@@ -685,8 +685,9 @@ async function handleEternalUpgrade(type) {
 // 宝箱のイベント
 async function startTreasureEvent() {
   setUIMode(UI_MODE.NONE);
+  clearCommands();
 
-  showEventImage("ivent_closechest.jpeg");         // 開ける前の画像
+  showEventImage("event_closechest.jpeg");         // 開ける前の画像
 
   addMessage("宝箱を見つけた！");
   await wait(3);
@@ -699,7 +700,7 @@ async function startTreasureEvent() {
     return;
   }
 
-  showEventImage("ivent_openchest.jpeg");          // 開けた後の画像
+  showEventImage("event_openchest.jpeg");          // 開けた後の画像
   
   addMessage(`${item.name}を手に入れた！`);
   await wait(3);
@@ -708,6 +709,75 @@ async function startTreasureEvent() {
 
   hideEventImage();
 
+  setUIMode(UI_MODE.NORMAL);
+}
+
+// 泉イベント
+async function startFountainEvent() {
+  setUIMode(UI_MODE.NONE);
+  clearCommands();
+
+  showEventImage("event_fountain.jpeg");
+
+  addMessage("澄んだ水をたたえた泉がある。");
+  await wait(1);
+  addMessage("キミは泉の水を飲んでもいいし、飲まなくてもいい。");
+
+  // 選択肢を表示
+  addCommand("飲まない", async () => {
+    addMessage("あなたは何もせず立ち去った。");
+    await wait(1);
+    endFountainEvent();
+  });
+
+  addCommand("飲む", async () => {
+    clearCommands();
+    await drinkFromFountain();
+    endFountainEvent();
+  });
+}
+async function drinkFromFountain() {
+  const gainedExp = Math.floor(gameState.floor * 5);
+
+  addMessage("キミは泉の水を口にした…");
+  await wait(1);
+
+  eternalState.exp += gainedExp           // 恒久経験値をゲット
+  saveEternalState();                     // ストレージ保存
+  addMessage(`魂に経験が刻まれる（+${gainedExp}）`);
+
+  if (randomChance(80)) {
+    // 回復（MAXの半分回復
+    const heal = Math.min(
+      gameState.player.maxHp - gameState.player.hp,
+      Math.floor(gameState.player.maxHp * 0.5)
+    );
+    gameState.player.hp += heal;
+
+    addMessage("体が癒やされていく…");
+    await wait(1);
+    addMessage(`HPが${heal}回復した！`);
+  } else {
+    // ダメージ
+    const dmg = Math.floor(gameState.player.hp * 0.5);
+    gameState.player.hp -= dmg;
+
+    addMessage("水は毒だった！");
+    await wait(1);
+    addMessage(`${dmg}のダメージを受けた！`);
+
+    if (gameState.player.hp <= 0) {
+      await wait(1);
+      await gameOver();
+      return;
+    }
+  }
+
+  updateStatus();
+  await wait(1);
+}
+function endFountainEvent() {
+  hideEventImage();
   setUIMode(UI_MODE.NORMAL);
 }
 
