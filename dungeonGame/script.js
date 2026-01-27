@@ -28,6 +28,7 @@ const BATTLE_RESULT = Object.freeze({
 const initialGameState = {
   floor: 1,
   step: 0,
+  isDead: false,
   player: {
     name: "キミ",
     level: 1,
@@ -156,7 +157,7 @@ function showEternalUpgradeCommands() {
     await handleEternalUpgrade("hp");
   });
 
-  addCommand("今回は強化しない", async () => {
+  addCommand("　今回は強化しない　", async () => {
     await handleEternalUpgrade("skip");
   });
 }
@@ -224,6 +225,8 @@ function waitForClick() {
 // 前進処理
 // ====================
 async function moveForward() {
+  if (gameState.isDead) return;                       // 死亡時はイベントキャンセル
+
   logW.innerHTML = "";
   setUIMode(UI_MODE.NONE); 
 
@@ -453,7 +456,7 @@ function levelUp() {
 async function handleDrop(enemy) {
   if (enemy.dropItem) {
     addMessage(`${enemy.dropItem.name}を手に入れた！`);
-    await equipItem(enemy.dropItem);
+    equipItem(enemy.dropItem);
   }
 
   updateStatus();
@@ -467,6 +470,7 @@ async function startGame() {
   setUIMode(UI_MODE.NONE); // 操作不能
 
   applyEternalBonus();            // 恒久ボーナスを適用
+  gameState.isDead = false;
 
   updateStatus();
   await changeBackground("dungeon_entrance.png");
@@ -523,6 +527,7 @@ async function gameOver() {
   // 状態リセット
   gameState = structuredClone(initialGameState);
 
+  gameState.isDead = true;                                  // 死亡フラグ ON
   enterEternalUpgrade();
 
 }
