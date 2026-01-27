@@ -246,9 +246,11 @@ async function moveForward() {
 
   addMessage("キミは奥へと進んだ。");
 
-  await changeBackground(
-    randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png"
-  );
+  if (gameState.floor < 5) {
+    await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
+  } else if (gameState.floor >= 5 && gameState.floor < 10) {
+    await changeBackground(randomChance(50) ? "dungeon_forest1.jpeg" : "dungeon_forest2.jpeg");
+  }
 
   await wait(1);
   addMessage("・・");
