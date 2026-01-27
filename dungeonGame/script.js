@@ -62,7 +62,8 @@ function loadEternalState() {
     def: 0,
     hpLv: 1,
     maxHp: 0,
-    exp: 0
+    exp: 0,
+    restartCount: 0
   };
 }
 // 恒久ボーナスの反映処理
@@ -448,7 +449,7 @@ function levelUp() {
 
   p.exp -= p.nextExp;
   p.level++;
-  p.nextExp = 10 * p.level * p.level + 10;
+  p.nextExp = 10 * p.level * p.level;
 
   const hpUp = 5;
   const atkUp = 2;
@@ -488,23 +489,47 @@ async function startGame() {
   updateStatus();
   await changeBackground("dungeon_entrance.png");
 
+  console.log(eternalState.restartCount);
   addMessage("・・・");
   await wait(1);
-  addMessage("・・");
-  await wait(1);
-  addMessage("・");
-  await wait(1);
-  addMessage("ここはどこだ。。。");
-  await wait(1);
-  addMessage("記憶がない。");
-  await wait(1);
-  addMessage("・・");
-  await wait(1);
-  addMessage("ここは、どうやら迷宮の入り口のようだ。");
-  await wait(1);
-  addMessage("なぜか懐かしいような気もする。");
-  await wait(1);
-  addMessage("キミは迷宮へ足を踏み入れる選択肢しか無いように思える。");
+  // 死亡カウントで分岐させる
+  if (eternalState.restartCount == 0) {
+    addMessage("・・");
+    await wait(1);
+    addMessage("・");
+    await wait(1);
+    addMessage("ここはどこだ。。。");
+    await wait(1);
+    addMessage("記憶がない。");
+    await wait(1);
+    addMessage("・・");
+    await wait(1);
+    addMessage("ここは、どうやら迷宮の入り口のようだ。");
+    await wait(1);
+    addMessage("なぜか懐かしいような気もする。");
+    await wait(1);
+    addMessage("キミは迷宮へ足を踏み入れる選択肢しか無いように思える。");
+  } else if (eternalState.restartCount == 1) {
+    addMessage("死んだはずのキミは再び立っている。");
+    await wait(1);
+    addMessage("確かに死んだはずだが。。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount == 2) {
+    addMessage("また始めに戻っている。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount == 3) {
+    addMessage("これは呪いだろうか。");
+    await wait(1);
+    addMessage("進むしかない。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount > 3) {
+    addMessage("何度目の再出発だろう。");
+    await wait(1);
+    addMessage("・・");
+  }
   await wait(1);
   addMessage("（クリックして冒険を始める）");
 
@@ -537,6 +562,9 @@ async function gameOver() {
   await wait(2);
   addMessage("（クリックして最初から?やり直す）");
 
+  eternalState.restartCount++; // 死亡カウントを増やす
+  saveEternalState(); 
+
   await waitForClick();
 
   // 状態リセット
@@ -567,9 +595,7 @@ function createEnemy() {
       addAtk = 0;
       addDef = drop.def;
     }
-  } else {
-//    addMessage("しかし何も落ちなかった。");
-  }
+  } 
 
   return {
     name: "スケルトン",
