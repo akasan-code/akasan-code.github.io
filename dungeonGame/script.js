@@ -202,6 +202,9 @@ function updateStatus() {
   document.getElementById("shield").textContent = gameState.player.shield ? gameState.player.shield.name : "なし";
 
   document.getElementById("eternalExp").textContent = eternalState.exp;
+  document.getElementById("eternalAtk").textContent = eternalState.atkLv;
+  document.getElementById("eternalDef").textContent = eternalState.defLv;
+  document.getElementById("eternalHp").textContent = eternalState.hpLv;
 }
 
 // ====================
