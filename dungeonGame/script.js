@@ -22,12 +22,17 @@ const BATTLE_RESULT = Object.freeze({
   WIN: "WIN",
   LOSE: "LOSE"
 });
-
+const STAGE = {
+  DUNGEON: "DUNGEON",
+  FOREST: "FOREST",
+  RUINS: "RUINS"
+};
 // ====================
 // ゲーム状態
 // ====================
 const initialGameState = {
   floor: 1,
+  currentStage: STAGE.DUNGEON,
   step: 0,
   isDead: false,
   player: {
@@ -246,10 +251,20 @@ async function moveForward() {
 
   addMessage("キミは奥へと進んだ。");
 
-  if (gameState.floor < 5) {
-    await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
-  } else if (gameState.floor >= 5 && gameState.floor < 10) {
-    await changeBackground(randomChance(50) ? "dungeon_forest1.jpeg" : "dungeon_forest2.jpeg");
+  console.log(gameState.currentStage);
+
+  switch (gameState.currentStage) {
+    case STAGE.DUNGEON:
+      await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
+      break;
+
+    case STAGE.FOREST:
+      await changeBackground(randomChance(50) ? "dungeon_forest1.jpeg" : "dungeon_forest2.jpeg");
+      break;
+
+    default:
+      await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
+      break;
   }
 
   await wait(1);
@@ -316,13 +331,19 @@ async function tryGoStairs() {
 
   gameState.floor++;
   gameState.step = 0;
+  gameState.currentStage = getStageByFloor(gameState.floor);
   updateStatus();
 
   await changeBackground("dungeon_entrance.png");
   setUIMode(UI_MODE.NORMAL); 
   return true;
 }
-
+// ステージ判定 階層からステージを
+function getStageByFloor(floor) {
+  if (floor <= 4) return STAGE.DUNGEON;
+  if (floor >= 5 && floor <= 9) return STAGE.FOREST;
+  if (floor >= 10 && floor <= 14) return STAGE.RUINS;
+}
 // ====================
 // 休憩
 // ====================
@@ -491,7 +512,6 @@ async function startGame() {
   updateStatus();
   await changeBackground("dungeon_entrance.png");
 
-  console.log(eternalState.restartCount);
   addMessage("・・・");
   await wait(1);
   // 死亡カウントで分岐させる
