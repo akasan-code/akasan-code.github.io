@@ -78,7 +78,6 @@ body {
   text-align: right;
   z-index: 20;                    /* 最前面 */
 }
-
 .command {
   cursor: pointer;
   padding: 1px 4px;
@@ -122,6 +121,17 @@ body {
   animation: eventFadeIn 0.4s ease-out;
 }
 
+/* 暗転用のレイヤー */
+#fadeOverlay {
+  position: absolute;
+  inset: 0;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease;
+  z-index: 999; 
+}
+
 </style>
 </head>
 <body>
@@ -149,6 +159,7 @@ body {
 
   <!-- 右にゲーム画面 -->
   <div id="dungeon"></div>
+  <div id="fadeOverlay"></div>
   <div id="commands">
     <div class="command" onclick="moveForward()">進む</div>
     <div class="command" onclick="rest()">休む</div>

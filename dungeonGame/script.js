@@ -6,6 +6,7 @@ const gameW = document.getElementById("game");
 const commandW = document.getElementById("commands");
 const eventWindow = document.getElementById("eventWindow");
 const eventImage  = document.getElementById("eventImage");
+const fadeOverlay = document.getElementById("fadeOverlay");
 
 // ====================
 // enum定義
@@ -106,6 +107,16 @@ function hideEventImage() {
   eventImage.src = "";
 }
 
+function fadeToBlack(duration = 2) {
+  fadeOverlay.style.transition = `opacity ${duration}s ease`;
+  fadeOverlay.style.opacity = "1";
+}
+
+function fadeFromBlack(duration = 1) {
+  fadeOverlay.style.transition = `opacity ${duration}s ease`;
+  fadeOverlay.style.opacity = "0";
+}
+
 // ====================
 // 背景変更
 // ====================
@@ -141,6 +152,8 @@ function showEternalUpgradeCommands() {
   clearCommands();
   commandW.style.display = "block";
 
+  fadeFromBlack(1.5);                   // 死亡の暗転から復帰
+
   const atkCost = getUpgradeCost("atk");
   const defCost = getUpgradeCost("def");
   const hpCost  = getUpgradeCost("hp");
@@ -157,7 +170,7 @@ function showEternalUpgradeCommands() {
     await handleEternalUpgrade("hp");
   });
 
-  addCommand("　今回は強化しない　", async () => {
+  addCommand(" 今回は強化しない", async () => {
     await handleEternalUpgrade("skip");
   });
 }
@@ -516,6 +529,8 @@ async function gameOver() {
   await wait(1);
   addMessage("・");
   await wait(1);
+  // ブラックアウト開始
+  fadeToBlack(4);
   addMessage("キミは力尽きた。");
   await wait(2);
   addMessage("すべてが闇に沈んでいく。。。");
@@ -779,6 +794,7 @@ async function startFountainEvent() {
 }
 async function drinkFromFountain() {
   const gainedExp = Math.floor(gameState.floor * 5);
+  setUIMode(UI_MODE.NONE);
 
   addMessage("キミは泉の水を口にした…");
   await wait(1);
@@ -818,6 +834,8 @@ async function drinkFromFountain() {
   await wait(1);
 }
 async function endFountainEvent() {
+  setUIMode(UI_MODE.NONE);
+
   addMessage("キミは泉を後にした");
   await wait(2);
   hideEventImage();
