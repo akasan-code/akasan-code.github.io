@@ -619,15 +619,56 @@ function createEnemy() {
     }
   } 
 
+  // 敵をステージによって切り替える
+  let enemy
+  switch (gameState.currentStage) {
+    case STAGE.DUNGEON:
+      enemy = {
+        name: "スケルトン",
+        image: "enemy_skeleton.jpeg",
+        hp: 10 + base * 5,
+        atk: 3 + base * 2 + addAtk,
+        def: 1 + base + addDef,
+        // 倒した時に落とす候補
+        dropItem: drop,
+        exp: 3 + base * 3
+      };
+      break;
+
+    case STAGE.FOREST:
+      enemy = {
+        name: "オーク",
+        image: "enemy_oak.jpeg",
+        hp: 30 + base * 5,
+        atk: 6 + base * 2 + addAtk,
+        def: 3 + base + addDef,
+        // 倒した時に落とす候補
+        dropItem: drop,
+        exp: 20 + base * 3
+      };
+      break;
+
+    default:
+      enemy = {
+        name: "スケルトン",
+        image: "enemy_skeleton.jpeg",
+        hp: 10 + base * 5,
+        atk: 3 + base * 2 + addAtk,
+        def: 1 + base + addDef,
+        // 倒した時に落とす候補
+        dropItem: drop,
+        exp: 3 + base * 3
+      };
+      break;
+  }
   return {
-    name: "スケルトン",
-    image: "enemy_skeleton.jpeg",
-    hp: 10 + base * 5,
-    atk: 3 + base * 2 + addAtk,
-    def: 1 + base + addDef,
-    // 倒した時に落とす候補
-    dropItem: drop,
-    exp: 3 + base * 3
+    name: enemy.name,
+    image: enemy.image,
+    hp: enemy.hp,
+    atk: enemy.atk,
+    def: enemy.def,
+    dropItem: enemy.dropItem,
+    exp: enemy.exp
   };
 }
 
