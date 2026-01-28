@@ -472,7 +472,7 @@ function levelUp() {
 
   p.exp -= p.nextExp;
   p.level++;
-  p.nextExp = 10 * p.level * p.level;
+  p.nextExp = 5 + 4 * p.level * p.level;
 
   const hpUp = 5;
   const atkUp = 2;
