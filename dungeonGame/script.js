@@ -627,7 +627,7 @@ function createEnemy() {
     def: 1 + base + addDef,
     // 倒した時に落とす候補
     dropItem: drop,
-    exp: 3 + base * 2
+    exp: 3 + base * 3
   };
 }
 
