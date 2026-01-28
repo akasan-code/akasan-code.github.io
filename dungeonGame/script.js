@@ -334,6 +334,13 @@ async function tryGoStairs() {
   gameState.currentStage = getStageByFloor(gameState.floor);
   updateStatus();
 
+  // ステージ変化
+  if (gameState.floor === 5) {
+    addMessage("ここは迷宮の中だろうか。");
+    await wait(1);
+    addMessage("大きな森が広がっている。");
+  }
+
   await changeBackground("dungeon_entrance.png");
   setUIMode(UI_MODE.NORMAL); 
   return true;
