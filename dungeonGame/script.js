@@ -165,6 +165,9 @@ function setUIMode(mode) {
     case UI_MODE.RETRY:
       showRetryCommands();
       break;
+    case UI_MODE.FRUIT:
+      showFruitCommands();
+      break;
     case UI_MODE.IDLE:
     default:
       commandW.style.display = "none";
@@ -334,7 +337,7 @@ async function moveForward() {
   // 0-60 戦闘、61-70 ？？？
   const roll = Math.random() * 100;
 
-  if (roll < 60) {
+  if (roll < 10) {
     // 戦闘
     const battleResult = await startBattle(createEnemy());
     if (battleResult === BATTLE_RESULT.LOSE) {
@@ -343,9 +346,20 @@ async function moveForward() {
     // 戦闘後の移動
     await tryGoStairs();
     return;
-  } else if (roll >= 60 && roll < 70) {
-//    泉
-    await startFountainEvent();
+  } else if (roll >= 10 && roll < 70) {
+      switch (gameState.currentStage) {
+        case STAGE.DUNGEON:
+          //    泉イベント
+          await startFountainEvent();
+          break;
+        case STAGE.FOREST:
+          //    果実イベント
+          await startFruitEvent();
+          break;
+        default:
+          break;
+      }
+
     gameState.step++;
     return;
   } else if (roll >= 70 && roll < 80) {
@@ -1003,6 +1017,82 @@ async function endFountainEvent() {
   logW.innerHTML = "";
 }
 
+// 果物イベント
+function showFruitCommands() {
+  clearCommands();
+  commandW.style.display = "block"; 
 
+  addCommand("果実を食べる", async () => {
+    await eatFruit();
+    await endFruitEvent();
+  });
+
+  addCommand("食べない", async () => {
+    await endFruitEvent();
+  });
+}
+async function startFruitEvent() {
+  setUIMode(UI_MODE.NONE);
+
+  showEventImage("event_fruit.png");
+
+  logW.innerHTML = "";
+  addMessage("見たことのない果実が樹に生っている。");
+  await wait(1);
+  addMessage("キミは果実を食べてもいいし、食べなくてもいい。");
+
+  setUIMode(UI_MODE.FRUIT);
+}
+async function eatFruit() {
+  const gainedExp = Math.floor(gameState.floor * 5);
+  setUIMode(UI_MODE.NONE);
+
+  addMessage("キミは果実を口にした…");
+  await wait(1);
+
+  eternalState.exp += gainedExp           // 恒久経験値をゲット
+  saveEternalState();                     // ストレージ保存
+  addMessage(`魂に経験が刻まれる！`);
+
+  if (randomChance(70)) {
+    // HPの上昇
+    const hpUp = gameState.floor;
+
+    gameState.player.maxHp += hpUp;
+    gameState.player.hp += hpUp;
+
+    addMessage("体に力がみなぎってくる。");
+    await wait(1);
+    addMessage(`MAXHPが${hpUp}増加した！`);
+  } else {
+    // ダメージ
+    const dmg = gameState.floor;
+    gameState.player.maxHp -= dmg;
+    gameState.player.hp -= dmg;
+
+    addMessage("体から力が抜けるようだ…");
+    await wait(1);
+    addMessage(`MAXHPが${dmg}減少してしまった…`);
+
+    if (gameState.player.hp <= 0) {
+      await wait(1);
+      await gameOver();
+      return;
+    }
+  }
+
+  updateStatus();
+  await wait(1);
+}
+async function endFruitEvent() {
+  setUIMode(UI_MODE.NONE);
+
+  addMessage("不思議な樹の元を去った。");
+  await wait(2);
+  hideEventImage();
+
+  await waitForCommands();
+  logW.innerHTML = "";
+}
 
 
