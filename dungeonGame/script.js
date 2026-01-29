@@ -17,6 +17,7 @@ const UI_MODE = Object.freeze({
   RETRY: "RETRY",
   BATTLE: "BATTLE",
   FOUNTAIN: "FOUNTAIN",
+  IDLE: "IDLE",
   NONE: "NONE"
 });
 const BATTLE_RESULT = Object.freeze({
@@ -148,79 +149,25 @@ function addCommand(label, onClick) {
   btn.onclick = onClick;
   commandW.appendChild(btn);
 }
-function showNormalCommands() {
-  clearCommands();
-  commandW.style.display = "block";
-
-  addCommand("進む", moveForward);
-  addCommand("休む", rest);
-  if (eternalState.restartCount > 0) {
-    addCommand("やり直し", enterRetry);
-  }
-}
-function showEternalUpgradeCommands() {
-  clearCommands();
-  commandW.style.display = "block";
-
-  fadeFromBlack(1.5);                   // 死亡の暗転から復帰
-
-  const atkCost = getUpgradeCost("atk");
-  const defCost = getUpgradeCost("def");
-  const hpCost  = getUpgradeCost("hp");
-
-  addCommand(`攻撃力 +2（${atkCost}EXP）`, async () => {
-    await handleEternalUpgrade("atk");
-  });
-
-  addCommand(`防御力 +1（${defCost}EXP）`, async () => {
-    await handleEternalUpgrade("def");
-  });
-
-  addCommand(`最大HP +5（${hpCost}EXP）`, async () => {
-    await handleEternalUpgrade("hp");
-  });
-
-  addCommand(" 今回は強化しない", async () => {
-    await handleEternalUpgrade("skip");
-  });
-}
-function showFountainCommands() {
-  clearCommands();
-  commandW.style.display = "block"; 
-
-  addCommand("水を飲む", async () => {
-    await drinkFromFountain();
-    await endFountainEvent();
-  });
-
-  addCommand("飲まない", async () => {
-    await endFountainEvent();
-  });
-}
-function showRetryCommands() {
-  clearCommands();
-  commandW.style.display = "block";
-
-  addCommand("挑戦をやり直す", yesRetry);
-  addCommand("挑戦を続ける", noRetry);
-}
 function setUIMode(mode) {
   clearCommands();
 
-  if (mode === UI_MODE.NORMAL) {
-    showNormalCommands();
-  }
-  if (mode === UI_MODE.ETERNAL) {
-    showEternalUpgradeCommands();
-  }
-  if (mode === UI_MODE.RETRY) {
-    showRetryCommands();
-  }
-  if (mode === UI_MODE.FOUNTAIN) {
-    showFountainCommands();
-  }
-  if (mode === UI_MODE.BATTLE || mode === UI_MODE.NONE) {
-    commandW.style.display = "none";
+  switch (mode) {
+    case UI_MODE.NORMAL:
+      showNormalCommands();
+      break;
+    case UI_MODE.FOUNTAIN:
+      showFountainCommands();
+      break;
+    case UI_MODE.ETERNAL:
+      showEternalUpgradeCommands();
+      break;
+    case UI_MODE.RETRY:
+      showRetryCommands();
+      break;
+    case UI_MODE.IDLE:
+    default:
+      commandW.style.display = "none";
   }
 }
 
@@ -240,10 +187,7 @@ function updateStatus() {
   document.getElementById("eternalDef").textContent = eternalState.defLv;
   document.getElementById("eternalHp").textContent = eternalState.hpLv;
 }
-
-// ====================
 // クリック待ち処理
-// ====================
 function waitForClick() {
   return new Promise(resolve => {
     const handler = () => {
@@ -254,9 +198,111 @@ function waitForClick() {
   });
 }
 
+
+// ★====================
+// ゲーム開始
+// ★====================
+setUIMode(UI_MODE.IDLE);
+
+startGame();
+
 // ====================
+// 開始イベント
+// ====================
+async function startGame() {
+  logW.innerHTML = "";
+  setUIMode(UI_MODE.NONE);        // 操作不能
+
+  applyEternalBonus();            // 恒久ボーナスを適用
+  gameState.isDead = false;
+
+  updateStatus();
+  await changeBackground("dungeon_entrance.png");
+
+  addMessage("・・・");
+  await wait(1);
+  // 死亡カウントで分岐させる
+  if (eternalState.restartCount == 0) {
+    addMessage("・・");
+    await wait(1);
+    addMessage("・");
+    await wait(1);
+    addMessage("ここはどこだ。。。");
+    await wait(1);
+    addMessage("記憶がない。");
+    await wait(1);
+    addMessage("・・");
+    await wait(1);
+    addMessage("ここは、どうやら迷宮の入り口のようだ。");
+    await wait(1);
+    addMessage("なぜか懐かしいような気もする。");
+    await wait(1);
+    addMessage("キミは迷宮へ足を踏み入れる選択肢しか無いように思える。");
+  } else if (eternalState.restartCount == 1) {
+    addMessage("死んだはずのキミは再び立っている。");
+    await wait(1);
+    addMessage("確かに死んだはずだが。。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount == 2) {
+    addMessage("また始めに戻っている。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount == 3) {
+    addMessage("これは呪いだろうか。");
+    await wait(1);
+    addMessage("進むしかない。");
+    await wait(1);
+    addMessage("・・");
+  } else if (eternalState.restartCount > 3) {
+    addMessage("何度目の再出発だろう。");
+    await wait(1);
+    addMessage("・・");
+  }
+  await wait(1);
+  addMessage("（クリックして冒険を始める）");
+
+  await waitForClick();   // ← ここで完全に止まる
+
+  logW.innerHTML = "";
+  addMessage("キミは迷宮へ足を踏み入れた。");
+  await wait(1);
+
+  await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
+  await waitForCommands();
+}
+
+// 待機状態の画面
+async function waitForCommands() {
+  setUIMode(UI_MODE.IDEL);    // commandなし
+  switch (gameState.currentStage) {
+    case STAGE.DUNGEON:
+      addMessage("薄暗い迷宮がどこまでも続いている気がする。");
+      break;
+    case STAGE.FOREST:
+      addMessage("広大な森が広がってる。");
+      break;
+    default:
+      break;
+  }
+
+  await wait(1);
+
+  setUIMode(UI_MODE.NORMAL); // 通常commandに変更
+}
+
+// 通常コマンド
+ function showNormalCommands() {
+  clearCommands();
+  commandW.style.display = "block";
+
+  addCommand("進む", moveForward);
+  addCommand("休む", rest);
+  if (eternalState.restartCount > 0) {
+    addCommand("やり直し", enterRetry);
+  }
+}
 // 前進処理
-// ====================
 async function moveForward() {
   if (gameState.isDead) return;                       // 死亡時はイベントキャンセル
 
@@ -265,17 +311,15 @@ async function moveForward() {
 
   addMessage("キミは奥へと進んだ。");
 
-  console.log(gameState.currentStage);
+//  console.log(gameState.currentStage);
 
   switch (gameState.currentStage) {
     case STAGE.DUNGEON:
       await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
       break;
-
     case STAGE.FOREST:
       await changeBackground(randomChance(50) ? "dungeon_forest1.jpeg" : "dungeon_forest2.jpeg");
       break;
-
     default:
       await changeBackground(randomChance(50) ? "dungeon_back1.png" : "dungeon_back2.png");
       break;
@@ -309,10 +353,6 @@ async function moveForward() {
     await startTreasureEvent();
     gameState.step++;
     return;
-  } else if (roll >= 80 && roll < 90) {
-//    道分岐
-    await tryGoStairs();
-    return;
   } else {
 //    何もなし（移動のみ）
     await tryGoStairs();
@@ -327,8 +367,7 @@ async function tryGoStairs() {
 
   if (!randomChance(stairsChance)) {
     gameState.step++;
-    addMessage("まだ奥へ続いている…");
-    setUIMode(UI_MODE.NORMAL); 
+    await waitForCommands();
     return false;
   }
 
@@ -338,7 +377,6 @@ async function tryGoStairs() {
   addMessage("キミは階段を下りた。");
   await wait(1);
   logW.innerHTML = "";
-  addMessage("さらに続いているようだ。");
 
   eternalState.exp += gameState.floor * 10;    // 恒久経験値をゲット
   saveEternalState();                         // ストレージ保存
@@ -353,10 +391,15 @@ async function tryGoStairs() {
     addMessage("ここは迷宮の中だろうか。");
     await wait(1);
     addMessage("大きな森が広がっている。");
+  } 
+
+  if (gameState.currentStage === STAGE.FOREST) {
+    await changeBackground("dungeon_forest1.jpeg");
+  } else {
+    await changeBackground("dungeon_entrance.png");
   }
 
-  await changeBackground("dungeon_entrance.png");
-  setUIMode(UI_MODE.NORMAL); 
+  await waitForCommands();
   return true;
 }
 // ステージ判定 階層からステージを
@@ -366,7 +409,7 @@ function getStageByFloor(floor) {
   if (floor >= 10 && floor <= 14) return STAGE.RUINS;
 }
 // ====================
-// 休憩
+// 休憩コマンド
 // ====================
 async function rest() {
   setUIMode(UI_MODE.NONE);            // コマンドを消す
@@ -394,7 +437,7 @@ async function rest() {
     updateStatus();
   }
 
-  setUIMode(UI_MODE.NORMAL);
+  await waitForCommands();
 }
 
 // ====================
@@ -507,7 +550,6 @@ function levelUp() {
   addMessage(`レベルアップした！ Lv.${p.level}`);
 
 }
-
 // ====================
 // ドロップ処理
 // ====================
@@ -518,72 +560,6 @@ async function handleDrop(enemy) {
   }
 
   updateStatus();
-}
-
-// ====================
-// 開始イベント
-// ====================
-async function startGame() {
-  logW.innerHTML = "";
-  setUIMode(UI_MODE.NONE); // 操作不能
-
-  applyEternalBonus();            // 恒久ボーナスを適用
-  gameState.isDead = false;
-
-  updateStatus();
-  await changeBackground("dungeon_entrance.png");
-
-  addMessage("・・・");
-  await wait(1);
-  // 死亡カウントで分岐させる
-  if (eternalState.restartCount == 0) {
-    addMessage("・・");
-    await wait(1);
-    addMessage("・");
-    await wait(1);
-    addMessage("ここはどこだ。。。");
-    await wait(1);
-    addMessage("記憶がない。");
-    await wait(1);
-    addMessage("・・");
-    await wait(1);
-    addMessage("ここは、どうやら迷宮の入り口のようだ。");
-    await wait(1);
-    addMessage("なぜか懐かしいような気もする。");
-    await wait(1);
-    addMessage("キミは迷宮へ足を踏み入れる選択肢しか無いように思える。");
-  } else if (eternalState.restartCount == 1) {
-    addMessage("死んだはずのキミは再び立っている。");
-    await wait(1);
-    addMessage("確かに死んだはずだが。。");
-    await wait(1);
-    addMessage("・・");
-  } else if (eternalState.restartCount == 2) {
-    addMessage("また始めに戻っている。");
-    await wait(1);
-    addMessage("・・");
-  } else if (eternalState.restartCount == 3) {
-    addMessage("これは呪いだろうか。");
-    await wait(1);
-    addMessage("進むしかない。");
-    await wait(1);
-    addMessage("・・");
-  } else if (eternalState.restartCount > 3) {
-    addMessage("何度目の再出発だろう。");
-    await wait(1);
-    addMessage("・・");
-  }
-  await wait(1);
-  addMessage("（クリックして冒険を始める）");
-
-  await waitForClick();   // ← ここで完全に止まる
-
-  logW.innerHTML = "";
-  addMessage("キミは迷宮へ足を踏み入れた。");
-  await wait(1);
-
-  setUIMode(UI_MODE.NORMAL); // 通常commandに変更
-
 }
 
 // ====================
@@ -617,8 +593,6 @@ async function gameOver() {
   enterEternalUpgrade();
 
 }
-
-
 // ====================
 // 敵生成
 // ====================
@@ -793,6 +767,10 @@ function equipItem(item) {
 
   updateStatus();
 }
+
+// ====================
+// やり直しコマンド
+// ====================
 function enterRetry() {
   logW.innerHTML = "";
 
@@ -803,21 +781,54 @@ function enterRetry() {
 
   setUIMode(UI_MODE.RETRY);
 }
+function showRetryCommands() {
+  clearCommands();
+  commandW.style.display = "block";
 
+  addCommand("挑戦をやり直す", yesRetry);
+  addCommand("挑戦を続ける", noRetry);
+}
+// やり直しのキャンセル
 function noRetry() {
   logW.innerHTML = "";
 
   addMessage("キミはやはり挑戦を続けることにした。");
-
-  setUIMode(UI_MODE.NORMAL);
+  waitForCommands();
 }
-
 function yesRetry() {
   logW.innerHTML = "";
   gameOver();
 }
 
+// ====================
+// 恒久強化コマンド
+// ====================
+function showEternalUpgradeCommands() {
+  clearCommands();
+  commandW.style.display = "block";
 
+  fadeFromBlack(1.5);                   // 死亡の暗転から復帰
+
+  const atkCost = getUpgradeCost("atk");
+  const defCost = getUpgradeCost("def");
+  const hpCost  = getUpgradeCost("hp");
+
+  addCommand(`攻撃力 +2（${atkCost}EXP）`, async () => {
+    await handleEternalUpgrade("atk");
+  });
+
+  addCommand(`防御力 +1（${defCost}EXP）`, async () => {
+    await handleEternalUpgrade("def");
+  });
+
+  addCommand(`最大HP +5（${hpCost}EXP）`, async () => {
+    await handleEternalUpgrade("hp");
+  });
+
+  addCommand(" 今回は強化しない", async () => {
+    await handleEternalUpgrade("skip");
+  });
+}
 // 恒久強化テーブル
 function getUpgradeCost(type) {
   const config = {
@@ -909,11 +920,25 @@ async function endTreasureEvent() {
   addMessage("キミは先に進む。");
   await wait(1);
   hideEventImage();
-  setUIMode(UI_MODE.NORMAL);
+
+  await waitForCommands();
   logW.innerHTML = "";
 }
 
 // 泉イベント
+function showFountainCommands() {
+  clearCommands();
+  commandW.style.display = "block"; 
+
+  addCommand("水を飲む", async () => {
+    await drinkFromFountain();
+    await endFountainEvent();
+  });
+
+  addCommand("飲まない", async () => {
+    await endFountainEvent();
+  });
+}
 async function startFountainEvent() {
   setUIMode(UI_MODE.NONE);
 
@@ -925,7 +950,6 @@ async function startFountainEvent() {
   addMessage("キミは泉の水を飲んでもいいし、飲まなくてもいい。");
 
   setUIMode(UI_MODE.FOUNTAIN);
-
 }
 async function drinkFromFountain() {
   const gainedExp = Math.floor(gameState.floor * 5);
@@ -936,7 +960,7 @@ async function drinkFromFountain() {
 
   eternalState.exp += gainedExp           // 恒久経験値をゲット
   saveEternalState();                     // ストレージ保存
-  addMessage(`魂に経験が刻まれる（+${gainedExp}）`);
+  addMessage(`魂に経験が刻まれる！`);
 
   if (randomChance(80)) {
     // 回復（MAXの半分回復
@@ -974,16 +998,11 @@ async function endFountainEvent() {
   addMessage("キミは泉を後にした");
   await wait(2);
   hideEventImage();
-  setUIMode(UI_MODE.NORMAL);
+
+  await waitForCommands();
   logW.innerHTML = "";
 }
 
-// ★====================
-// ゲーム開始
-// ★====================
-setUIMode(UI_MODE.NONE); // 最初は非表示
-
-startGame();
 
 
 
