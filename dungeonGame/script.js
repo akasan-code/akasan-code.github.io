@@ -14,6 +14,7 @@ const fadeOverlay = document.getElementById("fadeOverlay");
 const UI_MODE = Object.freeze({
   NORMAL: "NORMAL",
   ETERNAL: "ETERNAL",
+  RETRY: "RETRY",
   BATTLE: "BATTLE",
   FOUNTAIN: "FOUNTAIN",
   NONE: "NONE"
@@ -153,6 +154,9 @@ function showNormalCommands() {
 
   addCommand("進む", moveForward);
   addCommand("休む", rest);
+  if (eternalState.restartCount > 0) {
+    addCommand("やり直し", enterRetry);
+  }
 }
 function showEternalUpgradeCommands() {
   clearCommands();
@@ -193,6 +197,13 @@ function showFountainCommands() {
     await endFountainEvent();
   });
 }
+function showRetryCommands() {
+  clearCommands();
+  commandW.style.display = "block";
+
+  addCommand("挑戦をやり直す", yesRetry);
+  addCommand("挑戦を続ける", noRetry);
+}
 function setUIMode(mode) {
   clearCommands();
 
@@ -201,6 +212,9 @@ function setUIMode(mode) {
   }
   if (mode === UI_MODE.ETERNAL) {
     showEternalUpgradeCommands();
+  }
+  if (mode === UI_MODE.RETRY) {
+    showRetryCommands();
   }
   if (mode === UI_MODE.FOUNTAIN) {
     showFountainCommands();
@@ -599,7 +613,7 @@ async function gameOver() {
   // 状態リセット
   gameState = structuredClone(initialGameState);
 
-  gameState.isDead = true;                                  // 死亡フラグ ON
+//  gameState.isDead = true;                                  // 死亡フラグ ON
   enterEternalUpgrade();
 
 }
@@ -779,6 +793,31 @@ function equipItem(item) {
 
   updateStatus();
 }
+function enterRetry() {
+  logW.innerHTML = "";
+
+  addMessage("今回の挑戦をあきらめるか？");
+  addMessage("キミはあきらめて最初に戻ってもいいし、");
+  addMessage("このまま冒険を続けてもいい。");
+  addMessage("（選択する）");
+
+  setUIMode(UI_MODE.RETRY);
+}
+
+function noRetry() {
+  logW.innerHTML = "";
+
+  addMessage("キミはやはり挑戦を続けることにした。");
+
+  setUIMode(UI_MODE.NORMAL);
+}
+
+function yesRetry() {
+  logW.innerHTML = "";
+  gameOver();
+}
+
+
 // 恒久強化テーブル
 function getUpgradeCost(type) {
   const config = {
