@@ -337,7 +337,7 @@ async function moveForward() {
   // 0-60 戦闘、61-70 ？？？
   const roll = Math.random() * 100;
 
-  if (roll < 10) {
+  if (roll < 60) {
     // 戦闘
     const battleResult = await startBattle(createEnemy());
     if (battleResult === BATTLE_RESULT.LOSE) {
@@ -346,7 +346,7 @@ async function moveForward() {
     // 戦闘後の移動
     await tryGoStairs();
     return;
-  } else if (roll >= 10 && roll < 70) {
+  } else if (roll >= 60 && roll < 70) {
       switch (gameState.currentStage) {
         case STAGE.DUNGEON:
           //    泉イベント
@@ -685,15 +685,15 @@ function createEnemy() {
 // 装備ライブラリ
 // ====================
 const weapons = {
-  ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1 },
-  ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4 },
-  ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6 },
+  ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1, img: "item_ironMQsword.jpeg" },
+  ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4, img: "item_ironMQsword.jpeg"  },
+  ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironMQsword.jpeg"  },
 };
 
 const shields = {
-  woodLowQuality: { type: "shield", name: "粗悪な木盾", def: 1 },
-  woodMidQuality: { type: "shield", name: "普通な木盾", def: 2 },
-  woodHighQuality: { type: "shield", name: "上等な木盾", def: 3 }
+  woodLowQuality: { type: "shield", name: "粗悪な木盾", def: 1, img: "item_woodenMQshield.jpeg"  },
+  woodMidQuality: { type: "shield", name: "普通な木盾", def: 2, img: "item_woodenMQshield.jpeg"  },
+  woodHighQuality: { type: "shield", name: "上等な木盾", def: 3, img: "item_woodenMQshield.jpeg"  }
 };
 // ドロップテーブルの設定
 const dropTables = [
@@ -766,17 +766,21 @@ function weightedRandom(table) {
 
 // ★====================
 // アイテム装備
-function equipItem(item) {
+async function equipItem(item) {
   const p = gameState.player;
 
   if (item.type === "weapon" && p.weapon.atk < item.atk) {
     p.weapon = item;
     addMessage(`${item.name}を装備した。`);
+    showEventImage(item.img);             // 新装備のアイテムは画像表示する
+    await wait(2)
   }
 
   if (item.type === "shield" && p.shield.def < item.def) {
     p.shield = item;
     addMessage(`${item.name}を装備した。`);
+    showEventImage(item.img);             // 新装備のアイテムは画像表示する
+    await wait(2)
   }
 
   updateStatus();
