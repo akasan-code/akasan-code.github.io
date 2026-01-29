@@ -274,7 +274,7 @@ async function startGame() {
 
 // 待機状態の画面
 async function waitForCommands() {
-  setUIMode(UI_MODE.IDEL);    // commandなし
+  setUIMode(UI_MODE.IDLE);            // commandなし
   switch (gameState.currentStage) {
     case STAGE.DUNGEON:
       addMessage("薄暗い迷宮がどこまでも続いている気がする。");
