@@ -570,7 +570,7 @@ function levelUp() {
 async function handleDrop(enemy) {
   if (enemy.dropItem) {
     addMessage(`${enemy.dropItem.name}を手に入れた！`);
-    equipItem(enemy.dropItem);
+    await equipItem(enemy.dropItem);
   }
 
   updateStatus();
@@ -688,6 +688,7 @@ const weapons = {
   ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1, img: "item_ironMQsword.jpeg" },
   ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4, img: "item_ironMQsword.jpeg"  },
   ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironMQsword.jpeg"  },
+  silverSword: { type: "weapon", name: "銀の剣", atk: 11, img: "item_ironMQsword.jpeg"  },
 };
 
 const shields = {
@@ -771,16 +772,16 @@ async function equipItem(item) {
 
   if (item.type === "weapon" && p.weapon.atk < item.atk) {
     p.weapon = item;
-    addMessage(`${item.name}を装備した。`);
     showEventImage(item.img);             // 新装備のアイテムは画像表示する
-    await wait(2)
+    await wait(4)
+    addMessage(`${item.name}を装備した。`);
   }
 
   if (item.type === "shield" && p.shield.def < item.def) {
     p.shield = item;
-    addMessage(`${item.name}を装備した。`);
     showEventImage(item.img);             // 新装備のアイテムは画像表示する
-    await wait(2)
+    await wait(4)
+    addMessage(`${item.name}を装備した。`);
   }
 
   updateStatus();
@@ -915,7 +916,7 @@ async function startTreasureEvent() {
   showEventImage("event_closechest.jpeg");         // 開ける前の画像
 
   addMessage("宝箱を見つけた！");
-  await wait(3);
+  await wait(2);
 
   const table = getDropTable(gameState.floor);
   const item = weightedRandom(table);
@@ -929,7 +930,7 @@ async function startTreasureEvent() {
   
   addMessage(`${item.name}を手に入れた！`);
   await wait(1);
-  equipItem(item);
+  await equipItem(item);
   updateStatus();
 
   await endTreasureEvent();
