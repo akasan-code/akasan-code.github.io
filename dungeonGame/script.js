@@ -687,7 +687,7 @@ function createEnemy() {
 const weapons = {
   ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1, img: "item_ironMQsword.jpeg" },
   ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4, img: "item_ironMQsword.jpeg"  },
-  ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironMQsword.jpeg"  },
+  ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironHQsword.jpeg"  },
   silverSword: { type: "weapon", name: "銀の剣", atk: 11, img: "item_ironMQsword.jpeg"  },
 };
 
