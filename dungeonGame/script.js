@@ -737,9 +737,9 @@ const weapons = {
   ironLowQuality: { type: "weapon", name: "粗悪な鉄剣", atk: 1, img: "item_ironMQsword.jpeg" },
   ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4, img: "item_ironMQsword.jpeg"  },
   ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironHQsword.jpeg"  },
-  silverSword: { type: "weapon", name: "銀の剣", atk: 11, img: "item_ironMQsword.jpeg"  },
-  redSword: { type: "weapon", name: "朱の剣", atk: 19, img: "item_ironMQsword.jpeg"  },
-  blueSword: { type: "weapon", name: "蒼の剣", atk: 31, img: "item_ironMQsword.jpeg"  },
+  silverSword: { type: "weapon", name: "銀の剣", atk: 11, img: "item_silverSword.jpeg"  },
+  blueSword: { type: "weapon", name: "蒼の剣", atk: 19, img: "item_blueSword.jpeg"  },
+  redSword: { type: "weapon", name: "朱の剣", atk: 31, img: "item_redSword.jpeg"  },
 };
 
 const shields = {
@@ -787,7 +787,7 @@ const dropTables = [
     table: [
       { item: weapons.ironHighQuality, weight: 10 },
       { item: weapons.silverSword, weight: 45 },
-      { item: weapons.redSword, weight: 5 },
+      { item: weapons.blueSword, weight: 5 },
       { item: shields.woodHighQuality,  weight: 5 },
       { item: shields.ironShield,  weight: 30 },
       { item: shields.silverShield,  weight: 5 }
