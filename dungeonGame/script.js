@@ -655,7 +655,7 @@ function createEnemy(type = null) {
   if (type === "BOSS_10F") {
     return {
       name: "森の番人",
-      image: "enemy_skeleton.jpeg",
+      image: "enemy_boss10f.jpeg",
       hp: 120,
       atk: 26,
       def: 15,
@@ -738,26 +738,21 @@ const weapons = {
   ironMidQuality: { type: "weapon", name: "普通な鉄剣", atk: 4, img: "item_ironMQsword.jpeg"  },
   ironHighQuality: { type: "weapon", name: "上等な鉄剣", atk: 6, img: "item_ironHQsword.jpeg"  },
   silverSword: { type: "weapon", name: "銀の剣", atk: 11, img: "item_ironMQsword.jpeg"  },
+  redSword: { type: "weapon", name: "朱の剣", atk: 19, img: "item_ironMQsword.jpeg"  },
+  blueSword: { type: "weapon", name: "蒼の剣", atk: 31, img: "item_ironMQsword.jpeg"  },
 };
 
 const shields = {
   woodLowQuality: { type: "shield", name: "粗悪な木盾", def: 1, img: "item_woodenMQshield.jpeg"  },
   woodMidQuality: { type: "shield", name: "普通な木盾", def: 2, img: "item_woodenMQshield.jpeg"  },
-  woodHighQuality: { type: "shield", name: "上等な木盾", def: 3, img: "item_woodenMQshield.jpeg"  }
+  woodHighQuality: { type: "shield", name: "上等な木盾", def: 3, img: "item_woodenMQshield.jpeg"  },
+  ironShield: { type: "shield", name: "鉄の盾", def: 5, img: "item_woodenMQshield.jpeg"  },
+  silverShield: { type: "shield", name: "銀の盾", def: 8, img: "item_woodenMQshield.jpeg"  },
 };
 // ドロップテーブルの設定
 const dropTables = [
   {
     minFloor: 1,
-    table: [
-      { item: weapons.ironLowQuality, weight: 50 },
-      { item: weapons.ironMidQuality, weight: 10 },
-      { item: shields.woodLowQuality,  weight: 30 },
-      { item: shields.woodMidQuality,  weight: 10 }
-    ]
-  },
-  {
-    minFloor: 3,
     table: [
       { item: weapons.ironLowQuality, weight: 30 },
       { item: weapons.ironMidQuality, weight: 30 },
@@ -766,7 +761,7 @@ const dropTables = [
     ]
   },
   {
-    minFloor: 5,
+    minFloor: 3,
     table: [
       { item: weapons.ironLowQuality, weight: 10 },
       { item: weapons.ironMidQuality, weight: 45 },
@@ -777,12 +772,25 @@ const dropTables = [
     ]
   },
   {
+    minFloor: 5,
+    table: [
+      { item: weapons.ironMidQuality, weight: 10 },
+      { item: weapons.ironHighQuality, weight: 45 },
+      { item: weapons.silverSword, weight: 5 },
+      { item: shields.woodMidQuality,  weight: 5 },
+      { item: shields.woodHighQuality,  weight: 30 },
+      { item: shields.ironShield,  weight: 5 }
+    ]
+  },
+  {
     minFloor: 8,
     table: [
-      { item: weapons.ironMidQuality, weight: 30 },
-      { item: weapons.ironHighQuality, weight: 30 },
-      { item: shields.woodMidQuality,  weight: 20 },
-      { item: shields.woodHighQuality,  weight: 20 }
+      { item: weapons.ironHighQuality, weight: 10 },
+      { item: weapons.silverSword, weight: 45 },
+      { item: weapons.redSword, weight: 5 },
+      { item: shields.woodHighQuality,  weight: 5 },
+      { item: shields.ironShield,  weight: 30 },
+      { item: shields.silverShield,  weight: 5 }
     ]
   }
 ];
@@ -833,6 +841,8 @@ async function equipItem(item) {
     addMessage(`${item.name}を装備した。`);
   }
 
+  await wait(1)
+  hideEventImage();
   updateStatus();
 }
 
