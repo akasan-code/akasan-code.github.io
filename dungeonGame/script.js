@@ -388,7 +388,7 @@ async function tryGoStairs() {
   //  10階ボス（9階→階段発見時）
   if (gameState.floor === 9) {
     await startBossBattle10F();
-    return true;
+//    return true;
   }
 
   await changeBackground("dungeon_stairs.jpg");
@@ -553,6 +553,12 @@ async function startBossBattle10F() {
     addMessage("強敵を打ち倒した！");
     await wait(1);
 
+    eternalState.exp += 100;                // 恒久経験値をゲット
+    saveEternalState();                     // ストレージ保存
+    addMessage(`魂に経験が刻まれる！`);
+    await wait(2);
+
+    /*
     // 勝ったら階段処理へ
     await changeBackground("dungeon_stairs.jpg");
     addMessage("下への階段が現れた。");
@@ -564,6 +570,7 @@ async function startBossBattle10F() {
     updateStatus();
 
     await waitForCommands();
+    */
   }
 }
 
