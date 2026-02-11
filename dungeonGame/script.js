@@ -385,6 +385,12 @@ async function tryGoStairs() {
     return false;
   }
 
+  //  10階ボス（9階→階段発見時）
+  if (gameState.floor === 9) {
+    await startBossBattle10F();
+    return true;
+  }
+
   await changeBackground("dungeon_stairs.jpg");
   addMessage("下への階段を見つけた！");
   await wait(3);
@@ -530,6 +536,37 @@ async function startBattle(enemy) {
     return BATTLE_RESULT.LOSE;
   }
 }
+//  10階ボス（9階→階段発見時）
+async function startBossBattle10F() {
+  setUIMode(UI_MODE.NONE);
+  logW.innerHTML = "";
+
+  addMessage("階段を見つけたキミの前に巨大な鳥の影が舞い降りてくる");
+  await wait(1);
+  addMessage("……鳥と思われた影は、半獣半人であった！");
+  await wait(1);
+
+  const boss = createEnemy("BOSS_10F");
+  const result = await startBattle(boss);
+
+  if (result === BATTLE_RESULT.WIN) {
+    addMessage("強敵を打ち倒した！");
+    await wait(1);
+
+    // 勝ったら階段処理へ
+    await changeBackground("dungeon_stairs.jpg");
+    addMessage("下への階段が現れた。");
+    await wait(2);
+
+    gameState.floor++;
+    gameState.step = 0;
+    gameState.currentStage = getStageByFloor(gameState.floor);
+    updateStatus();
+
+    await waitForCommands();
+  }
+}
+
 // ====================
 // レベルアップ処理
 // ====================
@@ -610,10 +647,22 @@ async function gameOver() {
 // ====================
 // 敵生成
 // ====================
-function createEnemy() {
+function createEnemy(type = null) {
   const base = gameState.floor;
   let addAtk = 0;
   let addDef = 0;
+
+  if (type === "BOSS_10F") {
+    return {
+      name: "森の番人",
+      image: "enemy_skeleton.jpeg",
+      hp: 120,
+      atk: 26,
+      def: 15,
+      exp: 100,
+      dropItem: null
+    };
+  }
 
   // ドロップ判定して、敵に装備させる
   const drop = tryDrop();
